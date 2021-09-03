@@ -114,7 +114,7 @@ class MLogger():
                 kwargs = {}
                 
             kwargs["level"] = logging.INFO
-            log_msg = "-- {0}フレーム目:終了({1}％){2}".format(fno, round((fno / last_fno) * 100, 3), msg)
+            log_msg = "-- 第{0}帧:完成({1}％){2}".format(fno, round((fno / last_fno) * 100, 3), msg)
             self.print_logger(log_msg, *args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):

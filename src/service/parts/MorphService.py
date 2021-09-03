@@ -24,7 +24,7 @@ class MorphService():
                 # モーフデータが無い場合、或いは置換データが無い場合、処理スキップ
                 continue
 
-            logger.info("モーフ置換　【No.%s】", (data_set_idx + 1), decoration=MLogger.DECORATION_LINE)
+            logger.info("表情替换　【No.%s】", (data_set_idx + 1), decoration=MLogger.DECORATION_LINE)
 
             self.replace_morph(data_set_idx, data_set)
 
@@ -33,11 +33,11 @@ class MorphService():
                 self.options.now_process_ctrl.write(str(self.options.now_process))
 
                 proccess_key = "【No.{0}】{1}({2})".format(data_set_idx + 1, os.path.basename(data_set.motion.path), data_set.rep_model.name)
-                self.options.tree_process_dict[proccess_key]["モーフ置換"] = True
+                self.options.tree_process_dict[proccess_key]["表情替换"] = True
 
         return True
 
-    # モーフ置換実行
+    # 表情替换実行
     def replace_morph(self, data_set_idx: int, data_set: MOptionsDataSet):
         try:
             # 置換前のモーフリスト
@@ -97,7 +97,7 @@ class MorphService():
                         # 置換後モーフデータを追加
                         replaced_morphs[rep_morph_name][fno] = morph_data
 
-                logger.info("モーフ置換 %s → %s (%s)【No.%s】", org_morph_name, rep_morph_name, morph_ratio, (data_set_idx + 1))
+                logger.info("表情替换 %s → %s (%s)【No.%s】", org_morph_name, rep_morph_name, morph_ratio, (data_set_idx + 1))
             
             # 置換が全部終わったら、再登録
             for new_rep_morph_name, new_rep_morph_data in replaced_morphs.items():
@@ -105,11 +105,11 @@ class MorphService():
         except MKilledException as ke:
             raise ke
         except SizingException as se:
-            logger.error("サイジング処理が処理できないデータで終了しました。\n\n%s", se.message)
+            logger.error("无法处理表情替换的数据结束。\n\n%s", se.message)
             return se
         except Exception as e:
             import traceback
-            logger.error("サイジング処理が意図せぬエラーで終了しました。\n\n%s", traceback.format_exc())
+            logger.error("表情替换处理以意外错误结束。\n\n%s", traceback.format_exc())
             raise e
 
 

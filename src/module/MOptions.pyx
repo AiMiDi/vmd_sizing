@@ -57,7 +57,7 @@ cdef class MOptions():
 
         logger.info("")
 
-        log_txt = "足の長さの比率 ---------\n"
+        log_txt = "脚的长度比率 ---------\n"
 
         for data_set_idx, data_set in enumerate(self.data_set_list):
             if len(self.data_set_list) > 1:
@@ -69,7 +69,7 @@ cdef class MOptions():
                 data_set.xz_ratio = data_set.original_xz_ratio
                 data_set.y_ratio = data_set.original_y_ratio
 
-            log_txt = "{0}【No.{1}】　xz: {2}, y: {3} (元: xz: {4})\n".format(log_txt, (data_set_idx + 1), data_set.xz_ratio, data_set.y_ratio, data_set.original_xz_ratio)
+            log_txt = "{0}【No.{1}】　xz: {2}, y: {3} (原: xz: {4})\n".format(log_txt, (data_set_idx + 1), data_set.xz_ratio, data_set.y_ratio, data_set.original_xz_ratio)
 
         logger.info(log_txt)
 
@@ -144,7 +144,7 @@ cdef c_parse(str version_name):
             display_set_no = "【No.{0}】".format(set_no + 1)
 
             # モーションパス --------
-            logger.info("%s 調整対象モーションVMD/VPDファイル 読み込み開始", display_set_no)
+            logger.info("%s 调整对象动作VMD/VPD文件读取开始", display_set_no)
             
             file_name, input_ext = os.path.splitext(os.path.basename(motion_path))
             if input_ext.lower() == ".vmd":
@@ -152,51 +152,51 @@ cdef c_parse(str version_name):
             elif input_ext.lower() == ".vpd":
                 motion_reader = VpdReader(motion_path)
             else:
-                raise SizingException("{0}.motion_path 読み込み失敗(拡張子不正): {1}".format(display_set_no, os.path.basename(motion_path)))
+                raise SizingException("{0}.motion_path 读取失败（扩展名错误）: {1}".format(display_set_no, os.path.basename(motion_path)))
             
             motion = motion_reader.read_data()
 
-            logger.info("%s 調整対象モーションVMD/VPDファイル 読み込み成功 %s", display_set_no, os.path.basename(motion_path))
+            logger.info("%s 调整对象动作VMD/VPD文件读取成功 %s", display_set_no, os.path.basename(motion_path))
 
             # 元モデル ----------
-            logger.info("%s モーション作成元モデルPMXファイル 読み込み開始", display_set_no)
+            logger.info("%s 开始读取动作制作原模型PMX文件", display_set_no)
 
             file_name, input_ext = os.path.splitext(os.path.basename(org_model_path))
             if input_ext.lower() == ".pmx":
                 org_model_reader = PmxReader(org_model_path)
             else:
-                raise SizingException("{0}.org_model_path 読み込み失敗(拡張子不正): {1}".format(display_set_no, os.path.basename(org_model_path)))
+                raise SizingException("{0}.org_model_path 读取失败（扩展名错误）: {1}".format(display_set_no, os.path.basename(org_model_path)))
             
             org_model = org_model_reader.read_data()
 
-            logger.info("%s モーション作成元モデルPMXファイル 読み込み成功 %s", display_set_no, os.path.basename(org_model_path))
+            logger.info("%s 动作制作原模型PMX文件读取成功 %s", display_set_no, os.path.basename(org_model_path))
 
             # 先モデル ----------
-            logger.info("%s モーション変換先モデルPMXファイル 読み込み開始", display_set_no)
+            logger.info("%s 开始读取动作变换对象模型PMX文件", display_set_no)
 
             file_name, input_ext = os.path.splitext(os.path.basename(rep_model_path))
             if input_ext.lower() == ".pmx":
                 rep_model_reader = PmxReader(rep_model_path)
             else:
-                raise SizingException("{0}.rep_model_path 読み込み失敗(拡張子不正): {1}".format(display_set_no, os.path.basename(rep_model_path)))
+                raise SizingException("{0}.rep_model_path 读取失败（扩展名错误）: {1}".format(display_set_no, os.path.basename(rep_model_path)))
             
             rep_model = rep_model_reader.read_data()
 
-            logger.info("%s モーション変換先モデルPMXファイル 読み込み成功 %s", display_set_no, os.path.basename(rep_model_path))
+            logger.info("%s 动作变换目标模型PMX文件读取成功 %s", display_set_no, os.path.basename(rep_model_path))
 
             # 元モデル ----------
             if len(camera_org_model_path) > 0:
-                logger.info("%s カメラ作成元モデルPMXファイル 読み込み開始", display_set_no)
+                logger.info("%s 开始读取相机原型PMX文件", display_set_no)
 
                 file_name, input_ext = os.path.splitext(os.path.basename(camera_org_model_path))
                 if input_ext.lower() == ".pmx":
                     camera_org_model_reader = PmxReader(camera_org_model_path)
                 else:
-                    raise SizingException("{0}.camera_org_model_path 読み込み失敗(拡張子不正): {1}".format(display_set_no, os.path.basename(camera_org_model_path)))
+                    raise SizingException("{0}.camera_org_model_path 读取失败（扩展名错误）: {1}".format(display_set_no, os.path.basename(camera_org_model_path)))
                 
                 camera_org_model = camera_org_model_reader.read_data()
 
-                logger.info("%s カメラ作成元モデルPMXファイル 読み込み成功 %s", display_set_no, os.path.basename(camera_org_model_path))
+                logger.info("%s 相机原型PMX文件读取成功 %s", display_set_no, os.path.basename(camera_org_model_path))
             else:
                 # カメラ元モデルが未指定の場合、作成元モデルをそのまま流用
                 camera_org_model = org_model
@@ -217,25 +217,25 @@ cdef c_parse(str version_name):
                 [],
                 camera_org_model,
                 camera_offset_y,
-                ["センターXZ補正", "上半身補正", "下半身補正", "足ＩＫ補正", "つま先ＩＫ補正", "つま先補正", "肩補正", "センターY補正"]
+                ["センターXZ校正", "上半身校正", "下半身校正", "足ＩＫ校正", "つま先ＩＫ校正", "つま先校正", "肩校正", "センターY校正"]
             )
 
             data_set_list.append(data_set)
 
         if len(args.camera_motion_path) != 0:
             # カメラパス --------
-            logger.info("調整対象カメラVMDファイル 読み込み開始")
+            logger.info("调整对象相机VMD文件读取开始")
             
             file_name, input_ext = os.path.splitext(os.path.basename(args.camera_motion_path))
             if input_ext.lower() == ".vmd":
                 camera_motion_reader = VmdReader(args.camera_motion_path)
             else:
-                raise SizingException("camera_motion_path 読み込み失敗(拡張子不正): %s", os.path.basename(args.camera_motion_path))
+                raise SizingException("camera_motion_path 读取失败（扩展名错误）: %s", os.path.basename(args.camera_motion_path))
             
             camera_motion = camera_motion_reader.read_data()
             camera_output_vmd_path = MFileUtils.get_output_camera_vmd_path(args.camera_motion_path, data_set_list[0].rep_model.path, "")
 
-            logger.info("調整対象カメラVMD/VPDファイル 読み込み成功 %s", os.path.basename(args.camera_motion_path))
+            logger.info("调整对象相机VMD/VPD文件读取成功 %s", os.path.basename(args.camera_motion_path))
         else:
             camera_motion = None
             camera_output_vmd_path = None
@@ -259,9 +259,9 @@ cdef c_parse(str version_name):
 
         return options
     except SizingException as se:
-        logger.error("サイジング処理が処理できないデータで終了しました。\n\n%s", se.message, decoration=MLogger.DECORATION_BOX)
+        logger.error("无法处理调整尺寸数据结束。\n\n%s", se.message, decoration=MLogger.DECORATION_BOX)
     except Exception as e:
-        logger.critical("サイジング処理が意図せぬエラーで終了しました。", e, decoration=MLogger.DECORATION_BOX)
+        logger.critical("处理以意外错误结束。", e, decoration=MLogger.DECORATION_BOX)
 
 
 cdef class MOptionsDataSet():

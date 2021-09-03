@@ -32,15 +32,15 @@ class FilePanel(BasePanel):
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         # 変換前チェックボタン
-        self.check_btn_ctrl = wx.Button(self, wx.ID_ANY, u"変換前チェック", wx.DefaultPosition, wx.Size(200, 50), 0)
-        self.check_btn_ctrl.SetToolTip(u"入力されたファイル情報で処理可能かどうか、チェックを行います。")
+        self.check_btn_ctrl = wx.Button(self, wx.ID_ANY, u"转换前检查", wx.DefaultPosition, wx.Size(200, 50), 0)
+        self.check_btn_ctrl.SetToolTip(u"检查输入的文件信息是否可以处理。")
         self.check_btn_ctrl.Bind(wx.EVT_LEFT_DCLICK, self.on_doubleclick)
         self.check_btn_ctrl.Bind(wx.EVT_LEFT_DOWN, self.on_check_click)
         btn_sizer.Add(self.check_btn_ctrl, 0, wx.ALL, 5)
 
         # 実行ボタン
-        self.exec_btn_ctrl = wx.Button(self, wx.ID_ANY, u"VMDサイジング実行", wx.DefaultPosition, wx.Size(200, 50), 0)
-        self.exec_btn_ctrl.SetToolTip(u"VMDサイジング処理を実行します。")
+        self.exec_btn_ctrl = wx.Button(self, wx.ID_ANY, u"执行VMD尺寸调整", wx.DefaultPosition, wx.Size(200, 50), 0)
+        self.exec_btn_ctrl.SetToolTip(u"执行VMD尺寸处理。")
         self.exec_btn_ctrl.Bind(wx.EVT_LEFT_DCLICK, self.on_doubleclick)
         self.exec_btn_ctrl.Bind(wx.EVT_LEFT_DOWN, self.on_exec_click)
         btn_sizer.Add(self.exec_btn_ctrl, 0, wx.ALL, 5)
@@ -66,7 +66,7 @@ class FilePanel(BasePanel):
 
         self.now_process_ctrl = StatusCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size(20, -1), wx.TE_READONLY | wx.BORDER_NONE | wx.WANTS_CHARS)
         self.now_process_ctrl.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT))
-        self.now_process_ctrl.SetToolTip(u"現在進んでいるの大まかな処理数です。クリックすると、具体的な処理進捗がダイアログで表示されます。")
+        self.now_process_ctrl.SetToolTip(u"这是现在进行的粗略处理数。单击可在对话框中显示具体的处理进度。")
         self.now_process_ctrl.Bind(wx.EVT_LEFT_DOWN, self.show_process_dialog)
         status_sizer.Add(self.now_process_ctrl, 0, wx.ALIGN_LEFT, 5)
 
@@ -76,7 +76,7 @@ class FilePanel(BasePanel):
 
         self.total_process_ctrl = StatusCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size(20, -1), wx.TE_READONLY | wx.BORDER_NONE | wx.WANTS_CHARS)
         self.total_process_ctrl.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT))
-        self.total_process_ctrl.SetToolTip(u"全体の大まかな処理数です。クリックすると、具体的な処理進捗がダイアログで表示されます。")
+        self.total_process_ctrl.SetToolTip(u"这是整体的粗略处理数。单击可在对话框中显示具体的处理进度。")
         self.total_process_ctrl.Bind(wx.EVT_LEFT_DOWN, self.show_process_dialog)
         status_sizer.Add(self.total_process_ctrl, 0, wx.ALIGN_LEFT, 5)
 
@@ -122,7 +122,7 @@ class FilePanel(BasePanel):
     
     def on_doubleclick(self, event: wx.Event):
         self.timer.Stop()
-        logger.warning("ダブルクリックされました。", decoration=MLogger.DECORATION_BOX)
+        logger.warning("被双击了。", decoration=MLogger.DECORATION_BOX)
         event.Skip(False)
         return False
     
@@ -138,7 +138,7 @@ class FilePanel(BasePanel):
         # 出力先をファイルパネルのコンソールに変更
         sys.stdout = self.console_ctrl
 
-        if self.check_btn_ctrl.GetLabel() == "読み込み処理停止" and self.frame.load_worker:
+        if self.check_btn_ctrl.GetLabel() == "停止读取" and self.frame.load_worker:
             # フォーム無効化
             self.disable()
             # 停止状態でボタン押下時、停止
@@ -153,7 +153,7 @@ class FilePanel(BasePanel):
             # プログレス非表示
             self.gauge_ctrl.SetValue(0)
 
-            logger.warning("読み込み処理を中断します。", decoration=MLogger.DECORATION_BOX)
+            logger.warning("已经停止读取。", decoration=MLogger.DECORATION_BOX)
             
             event.Skip(False)
         elif not self.frame.load_worker:
@@ -172,7 +172,7 @@ class FilePanel(BasePanel):
             
             event.Skip()
         else:
-            logger.error("まだ処理が実行中です。終了してから再度実行してください。", decoration=MLogger.DECORATION_BOX)
+            logger.error("处理还在执行中。请结束后再次执行。", decoration=MLogger.DECORATION_BOX)
             event.Skip(False)
 
     def on_exec_click(self, event: wx.Event):
@@ -189,7 +189,7 @@ class FilePanel(BasePanel):
         # 出力先をファイルパネルのコンソールに変更
         sys.stdout = self.console_ctrl
 
-        if self.exec_btn_ctrl.GetLabel() == "VMDサイジング停止" and self.frame.worker:
+        if self.exec_btn_ctrl.GetLabel() == "停止VMD尺寸调整" and self.frame.worker:
             # フォーム無効化
             self.disable()
             # 停止状態でボタン押下時、停止
@@ -204,7 +204,7 @@ class FilePanel(BasePanel):
             # プログレス非表示
             self.gauge_ctrl.SetValue(0)
 
-            logger.warning("VMDサイジングを中断します。", decoration=MLogger.DECORATION_BOX)
+            logger.warning("已经停止VMD尺寸调整。", decoration=MLogger.DECORATION_BOX)
             
             event.Skip(False)
         elif not self.frame.worker:
@@ -223,7 +223,7 @@ class FilePanel(BasePanel):
             
             event.Skip()
         else:
-            logger.error("まだ処理が実行中です。終了してから再度実行してください。", decoration=MLogger.DECORATION_BOX)
+            logger.error("处理还在执行中。请结束后再次执行。", decoration=MLogger.DECORATION_BOX)
             event.Skip(False)
 
     def set_output_vmd_path(self, event, is_force=False):
@@ -254,7 +254,7 @@ class FilePanel(BasePanel):
 class ProcessDialog(wx.Dialog):
 
     def __init__(self, frame: wx.Frame, panel: wx.Panel):
-        super().__init__(frame, id=wx.ID_ANY, title="進捗ダイアログ", pos=(-1, -1), size=(700, 450), style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
+        super().__init__(frame, id=wx.ID_ANY, title="进度对话框", pos=(-1, -1), size=(700, 450), style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
 
         self.frame = frame
         self.panel = panel
@@ -280,7 +280,7 @@ class ProcessDialog(wx.Dialog):
     # 初期化
     def initialize(self, tree_dict: dict):
         # Root
-        tr_root_ctrl = self.tree_ctrl.AddRoot(text="VMDサイジング")
+        tr_root_ctrl = self.tree_ctrl.AddRoot(text="VMD尺寸调整")
 
         # ツリー追加
         self.append_tree(tree_dict, tr_root_ctrl)
