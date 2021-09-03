@@ -1,3 +1,2 @@
-conda install -y pyinstaller
 cd /d %~dp0
-activate vmdsizing_cython  && pip install cython  && pip install numpy  && pip install wxpython  && pip install numpy-quaternion  && pip install bezier  && pip install pypiwin32
+activate vmdsizing_cython  pip install bezier==2020.2.3 && pip install cython==0.29.21 && pip install numpy==1.19.1 && pip install wxpython==4.1.0 && pip install numpy-quaternion==2020.5.19.15.27.24 && pip install pypiwin32==223 && pip install pyinstaller==4.1 && pip install --upgrade setuptools && pip install --upgrade numpy
