@@ -108,7 +108,7 @@ class VmdReader:
 
                     if n // 10000 > prev_n:
                         prev_n = n // 10000
-                        logger.info("-- VMDモーション読み込み キー: %s" % n)
+                        logger.info("-- VMD骨骼动作读取 关键帧: %s" % n)
 
                 # モーフ数
                 motion.morph_cnt = self.read_uint(4)
@@ -147,7 +147,7 @@ class VmdReader:
 
                     if n // 1000 > prev_n:
                         prev_n = n // 1000
-                        logger.info("-- VMDモーション読み込み モーフ: %s" % n)
+                        logger.info("--VMD动作读取 表情: %s" % n)
 
                 try:
                     # カメラ数
@@ -200,7 +200,7 @@ class VmdReader:
 
                         if n // 10000 > prev_n:
                             prev_n = n // 10000
-                            logger.info("VMDカメラ読み込み キー: %s" % n)
+                            logger.info("VMD相机读取 关键帧: %s" % n)
 
                 except Exception:
                     # 情報がない場合、catchして握りつぶす

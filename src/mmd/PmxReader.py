@@ -44,7 +44,7 @@ class PmxReader:
 
             if signature[:3] != b"PMX" or (version != 2.0 and version != 2.1):
                 # 整合性チェック
-                raise MParseException("PMX2.0/2.1形式外のデータです。signature: {0}, version: {1} ".format(signature, version))
+                raise MParseException("非PMX2.0/2.1格式的数据。signature: {0}, version: {1} ".format(signature, version))
 
             # flag
             flag_bytes = self.read_int(1)
@@ -208,7 +208,7 @@ class PmxReader:
                     
                 logger.test("len(vertices): %s", len(pmx.vertices))
                 logger.test("vertices.keys: %s", pmx.vertices.keys())
-                logger.info("-- PMX 頂点読み込み完了")
+                logger.info("-- PMX 顶点读取完成")
 
                 # 面データリスト
                 for iidx in range(self.read_int(4)):
@@ -220,14 +220,14 @@ class PmxReader:
                     
                 logger.test("len(indices): %s", len(pmx.indices))
                 
-                logger.info("-- PMX 面読み込み完了")
+                logger.info("-- PMX 读取完成")
 
                 # テクスチャデータリスト
                 for _ in range(self.read_int(4)):
                     pmx.textures.append(self.read_text())
                 logger.test("len(textures): %s", len(pmx.textures))
 
-                logger.info("-- PMX テクスチャ読み込み完了")
+                logger.info("-- PMX 读取纹理完成")
 
                 # 全面データの件数
                 total_index_count = 0
@@ -282,7 +282,7 @@ class PmxReader:
                     pmx.material_indices[material.index] = material.name
                 logger.test("len(materials): %s", len(pmx.materials))
 
-                logger.info("-- PMX 材質読み込み完了")
+                logger.info("-- PMX 材质读取完成")
                 
                 pmx.bones = {}
                 pmx.bone_indexes = {}
@@ -766,7 +766,7 @@ class PmxReader:
                     # ボーンの長さを計算する
                     self.calc_bone_length(pmx.bones, pmx.bone_indexes)
 
-                logger.info("-- PMX ボーン読み込み完了")
+                logger.info("-- PMX 骨架读取完成")
 
                 # 操作パネル (PMD:カテゴリ) 1:眉(左下) 2:目(左上) 3:口(右上) 4:その他(右下)
                 morphs_by_panel = {}
@@ -837,7 +837,7 @@ class PmxReader:
 
                 logger.test("len(morphs): %s", len(pmx.morphs))
 
-                logger.info("-- PMX モーフ読み込み完了")
+                logger.info("-- PMX 表情读取完成")
 
                 # 表示枠データリスト
                 for _ in range(self.read_int(4)):
@@ -873,7 +873,7 @@ class PmxReader:
 
                 logger.test("len(display_slots): %s", len(pmx.display_slots))
 
-                logger.info("-- PMX 表示枠読み込み完了")
+                logger.info("-- PMX 导入显示栏完成")
 
                 # 剛体データリスト
                 for rigidbody_idx in range(self.read_int(4)):
@@ -909,7 +909,7 @@ class PmxReader:
 
                 logger.test("len(rigidbodies): %s", len(pmx.rigidbodies))
 
-                logger.info("-- PMX 剛体読み込み完了")
+                logger.info("-- PMX 刚体读取完成")
 
                 # ジョイントデータリスト
                 for joint_idx in range(self.read_int(4)):
@@ -933,7 +933,7 @@ class PmxReader:
 
                 logger.test("len(joints): %s", len(pmx.joints))
 
-                logger.info("-- PMX ジョイント読み込み完了")
+                logger.info("-- PMX 连接读取完成")
 
             # ハッシュを設定
             pmx.digest = self.hexdigest()

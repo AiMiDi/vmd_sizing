@@ -1,0 +1,4 @@
+1. To install Anaconda3 or Miniconda3, select Add Path.
+2. Run the "install.bat".
+3. Run the "config.bat".
+4. Copy all the files in the "bezier_fix" folder to the "Anaconda3\envs\vmdsizing_cython\Lib\site-packages\bezier" (or Miniconda3) path

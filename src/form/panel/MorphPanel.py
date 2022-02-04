@@ -21,11 +21,11 @@ class MorphPanel(BasePanel):
         self.header_panel = wx.Panel(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL)
         self.header_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.description_txt = wx.StaticText(self.header_panel, wx.ID_ANY, "モーションに使用されているモーフを、変換先モデルにある任意のモーフに置き換える事ができます。" \
-                                             + "\nモーションモーフプルダウンの先頭記号は以下の通りです。" \
-                                             + "\n○　…　モーション・生成元モデル・変換先モデルの全てにあるモーフ" \
-                                             + "\n●　…　モーション・変換先モデルにあり、生成元モデルにないモーフ" \
-                                             + "\n▲　…　モーション・生成元モデルにあり、変換先モデルにないモーフ", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.description_txt = wx.StaticText(self.header_panel, wx.ID_ANY, "可以用目标表情中的任意表情替换用于动作的表情。" \
+                                             + "\n动作表情下拉列表的起始符号含义如下所示：" \
+                                             + "\n    ○　…　动作生成原模型、变换目标模型的全部表情" \
+                                             + "\n    ●　…　在动作变换目标模型中有，生成原模型中没有的表情" \
+                                             + "\n    ▲　…　在动作制作原模型中有，在变换目标模型中没有的表情", wx.DefaultPosition, wx.DefaultSize, 0)
         self.header_sizer.Add(self.description_txt, 0, wx.ALL, 5)
 
         self.header_panel.SetSizer(self.header_sizer)
@@ -66,7 +66,7 @@ class MorphPanel(BasePanel):
                 # あれば、そのNoのモーフ置換リスト
                 return morph_set.get_morph_list(), True
             else:
-                logger.warning("【No.%s】モーフ置換設定後、ファイルセットが変更されたため、モーフ置換をクリアします", set_no, decoration=MLogger.DECORATION_BOX)
+                logger.warning("【No.%s】设置表情替换后，文件集已更改，因此清除表情替换", set_no, decoration=MLogger.DECORATION_BOX)
                 # ハッシュが一致してない場合空(設定されていた事だけ返す)
                 return [], True
 
@@ -201,26 +201,26 @@ class MorphSet():
             self.btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
             # 一括用コピーボタン
-            self.copy_btn_ctrl = wx.Button(self.window, wx.ID_ANY, u"一括用コピー", wx.DefaultPosition, wx.DefaultSize, 0)
-            self.copy_btn_ctrl.SetToolTip(u"モーフ置換データを一括CSVの形式に合わせてクリップボードにコピーします")
+            self.copy_btn_ctrl = wx.Button(self.window, wx.ID_ANY, u"批量复制", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.copy_btn_ctrl.SetToolTip(u"根据CSV的形式将表情替换数据复制到剪贴板")
             self.copy_btn_ctrl.Bind(wx.EVT_BUTTON, self.on_copy)
             self.btn_sizer.Add(self.copy_btn_ctrl, 0, wx.ALL, 5)
 
             # インポートボタン
-            self.import_btn_ctrl = wx.Button(self.window, wx.ID_ANY, u"インポート ...", wx.DefaultPosition, wx.DefaultSize, 0)
-            self.import_btn_ctrl.SetToolTip(u"モーフ置換データをCSVファイルから読み込みます。\nファイル選択ダイアログが開きます。")
+            self.import_btn_ctrl = wx.Button(self.window, wx.ID_ANY, u"导入 ...", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.import_btn_ctrl.SetToolTip(u"从CSV文件读取表情替换数据。\n打开文件选择对话框。")
             self.import_btn_ctrl.Bind(wx.EVT_BUTTON, self.on_import)
             self.btn_sizer.Add(self.import_btn_ctrl, 0, wx.ALL, 5)
 
             # エクスポートボタン
-            self.export_btn_ctrl = wx.Button(self.window, wx.ID_ANY, u"エクスポート ...", wx.DefaultPosition, wx.DefaultSize, 0)
-            self.export_btn_ctrl.SetToolTip(u"モーフ置換データをCSVファイルに出力します。\n調整対象VMDと同じフォルダに出力します。")
+            self.export_btn_ctrl = wx.Button(self.window, wx.ID_ANY, u"导出 ...", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.export_btn_ctrl.SetToolTip(u"表情替换数据输出至CSV文件。\n输出到与调整对象VMD相同的文件夹。")
             self.export_btn_ctrl.Bind(wx.EVT_BUTTON, self.on_export)
             self.btn_sizer.Add(self.export_btn_ctrl, 0, wx.ALL, 5)
 
             # 行追加ボタン
-            self.add_line_btn_ctrl = wx.Button(self.window, wx.ID_ANY, u"行追加", wx.DefaultPosition, wx.DefaultSize, 0)
-            self.add_line_btn_ctrl.SetToolTip(u"モーフ置換の組み合わせ行を追加します。\n上限はありません。")
+            self.add_line_btn_ctrl = wx.Button(self.window, wx.ID_ANY, u"添加行", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.add_line_btn_ctrl.SetToolTip(u"添加手动替换表情的组合行。\n没有上限。")
             self.add_line_btn_ctrl.Bind(wx.EVT_BUTTON, self.on_add_line)
             self.btn_sizer.Add(self.add_line_btn_ctrl, 0, wx.ALL, 5)
 
@@ -249,8 +249,8 @@ class MorphSet():
             self.grid_sizer.Add(self.name_ratio_txt, 0, wx.CENTER | wx.ALL, 5)
 
             # ------------
-            self.org_morph_txt = wx.StaticText(self.window, wx.ID_ANY, u"モーションモーフ", wx.DefaultPosition, wx.DefaultSize, 0)
-            self.org_morph_txt.SetToolTip(u"調整対象VMD/VPDに登録されているモーフです。")
+            self.org_morph_txt = wx.StaticText(self.window, wx.ID_ANY, u"表情动作", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.org_morph_txt.SetToolTip(u"是在调整对象VMD/VPD中注册的表情。")
             self.org_morph_txt.Wrap(-1)
             self.grid_sizer.Add(self.org_morph_txt, 0, wx.ALL, 5)
 
@@ -258,13 +258,13 @@ class MorphSet():
             self.arrow_txt.Wrap(-1)
             self.grid_sizer.Add(self.arrow_txt, 0, wx.CENTER | wx.ALL, 5)
 
-            self.rep_morph_txt = wx.StaticText(self.window, wx.ID_ANY, u"置換後モーフ", wx.DefaultPosition, wx.DefaultSize, 0)
-            self.rep_morph_txt.SetToolTip(u"モーション変換先モデルで定義されているモーフです。")
+            self.rep_morph_txt = wx.StaticText(self.window, wx.ID_ANY, u"替换后的表情", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.rep_morph_txt.SetToolTip(u"移动目标模型中定义的表情。")
             self.rep_morph_txt.Wrap(-1)
             self.grid_sizer.Add(self.rep_morph_txt, 0, wx.ALL, 5)
 
-            self.ratio_title_txt = wx.StaticText(self.window, wx.ID_ANY, u"大きさ補正", wx.DefaultPosition, wx.DefaultSize, 0)
-            self.ratio_title_txt.SetToolTip(u"置換後モーフの大きさを補正します。")
+            self.ratio_title_txt = wx.StaticText(self.window, wx.ID_ANY, u"调整表情幅度", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.ratio_title_txt.SetToolTip(u"修改替换后的表情幅度。")
             self.ratio_title_txt.Wrap(-1)
             self.grid_sizer.Add(self.ratio_title_txt, 0, wx.ALL, 5)
 
@@ -273,7 +273,7 @@ class MorphSet():
 
             self.set_sizer.Add(self.grid_sizer, 0, wx.ALL, 5)
         else:
-            self.no_data_txt = wx.StaticText(self.window, wx.ID_ANY, u"データなし", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.no_data_txt = wx.StaticText(self.window, wx.ID_ANY, u"无数据", wx.DefaultPosition, wx.DefaultSize, 0)
             self.no_data_txt.Wrap(-1)
             self.set_sizer.Add(self.no_data_txt, 0, wx.ALL, 5)
 
@@ -358,9 +358,9 @@ class MorphSet():
             wx.TheClipboard.SetData(wx.TextDataObject(";".join(morph_txt_list)))
             wx.TheClipboard.Close()
 
-        with wx.TextEntryDialog(self.frame, u"一括CSV用のモーフデータを出力します。\n" \
-                                + "ダイアログを表示した時点で、下記モーフデータがクリップボードにコピーされています。\n" \
-                                + "コピーできてなかった場合、ボックス内の文字列を選択して、CSVに貼り付けてください。", caption=u"一括CSV用モーフデータ",
+        with wx.TextEntryDialog(self.frame, u"输出CSV表情数据。\n" \
+                                + "显示对话框时，以下表情数据已复制到剪贴板。\n" \
+                                + "如果无法复制，请选择框中的字符串并粘贴到CSV上。", caption=u"CSV表情数据",
                                 value=";".join(morph_txt_list), style=wx.TextEntryDialogStyle, pos=wx.DefaultPosition) as dialog:
             dialog.ShowModal()
 
@@ -371,7 +371,7 @@ class MorphSet():
             self.file_set.rep_model_file_ctrl.file_ctrl.GetPath()
         )
 
-        with wx.FileDialog(self.frame, "モーフ組み合わせCSVを読み込む", wildcard=u"CSVファイル (*.csv)|*.csv|すべてのファイル (*.*)|*.*",
+        with wx.FileDialog(self.frame, "读取表情组合CSV", wildcard=u"CSV文件 (*.csv)|*.csv|全部文件 (*.*)|*.*",
                            defaultDir=os.path.dirname(input_morph_path),
                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
 
@@ -435,7 +435,7 @@ class MorphSet():
                 self.file_set.set_output_vmd_path(event)
 
             except Exception:
-                dialog = wx.MessageDialog(self.frame, "CSVファイルが読み込めませんでした '%s'\n\n%s." % (target_morph_path, traceback.format_exc()), style=wx.OK)
+                dialog = wx.MessageDialog(self.frame, "无法读取CSV文件 '%s'\n\n%s." % (target_morph_path, traceback.format_exc()), style=wx.OK)
                 dialog.ShowModal()
                 dialog.Destroy()
 
@@ -465,14 +465,14 @@ class MorphSet():
                 # 大きさ
                 cw.writerow(ratio_list)
 
-            logger.info("出力成功: %s" % output_morph_path)
+            logger.info("导出成功: %s" % output_morph_path)
 
-            dialog = wx.MessageDialog(self.frame, "モーフデータのエクスポートに成功しました \n'%s'" % (output_morph_path), style=wx.OK)
+            dialog = wx.MessageDialog(self.frame, "表情数据导出成功 \n'%s'" % (output_morph_path), style=wx.OK)
             dialog.ShowModal()
             dialog.Destroy()
 
         except Exception:
-            dialog = wx.MessageDialog(self.frame, "モーフデータのエクスポートに失敗しました \n'%s'\n\n%s." % (output_morph_path, traceback.format_exc()), style=wx.OK)
+            dialog = wx.MessageDialog(self.frame, "导出表情数据失败 \n'%s'\n\n%s." % (output_morph_path, traceback.format_exc()), style=wx.OK)
             dialog.ShowModal()
             dialog.Destroy()
 

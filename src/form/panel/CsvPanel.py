@@ -24,23 +24,23 @@ class CsvPanel(BasePanel):
         super().__init__(frame, parent, tab_idx)
         self.convert_csv_worker = None
 
-        self.description_txt = wx.StaticText(self, wx.ID_ANY, "指定されたVMDファイルの解析結果を、ボーン/モーフ/カメラに分けてCSVファイルとして出力します。", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.description_txt = wx.StaticText(self, wx.ID_ANY, "将指定的VMD文件的解析结果分为骨骼动画/表情/照相机作为CSV文件输出。", wx.DefaultPosition, wx.DefaultSize, 0)
         self.sizer.Add(self.description_txt, 0, wx.ALL, 5)
 
         self.static_line = wx.StaticLine(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL)
         self.sizer.Add(self.static_line, 0, wx.EXPAND | wx.ALL, 5)
 
         # CSVファイルコントロール
-        self.vmd_file_ctrl = BaseFilePickerCtrl(frame, self, u"VMDファイル", u"VMDファイルを開く", ("vmd"), wx.FLP_DEFAULT_STYLE, \
-                                                u"CSVに変換したいVMDのファイルパスを指定してください。", \
+        self.vmd_file_ctrl = BaseFilePickerCtrl(frame, self, u"VMD文件", u"打开VMD文件", ("vmd"), wx.FLP_DEFAULT_STYLE, \
+                                                u"请指定想要转换成CSV的VMD的文件路径。", \
                                                 is_aster=False, is_save=False, set_no=0)
         self.sizer.Add(self.vmd_file_ctrl.sizer, 0, wx.EXPAND | wx.ALL, 0)
 
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         # CSV変換実行ボタン
-        self.csv_btn_ctrl = wx.Button(self, wx.ID_ANY, u"CSV変換実行", wx.DefaultPosition, wx.Size(200, 50), 0)
-        self.csv_btn_ctrl.SetToolTip(u"VMDをCSVに変換します。")
+        self.csv_btn_ctrl = wx.Button(self, wx.ID_ANY, u"CSV转换执行", wx.DefaultPosition, wx.Size(200, 50), 0)
+        self.csv_btn_ctrl.SetToolTip(u"将VMD转换为CSV。")
         self.csv_btn_ctrl.Bind(wx.EVT_BUTTON, self.on_convert_csv)
         btn_sizer.Add(self.csv_btn_ctrl, 0, wx.ALL, 5)
 
@@ -105,7 +105,7 @@ class CsvPanel(BasePanel):
 
         # CSV変換開始
         if self.convert_csv_worker:
-            logger.error("まだ処理が実行中です。終了してから再度実行してください。", decoration=MLogger.DECORATION_BOX)
+            logger.error("处理还在执行中。请结束后再次执行。", decoration=MLogger.DECORATION_BOX)
         else:
             # 別スレッドで実行
             self.convert_csv_worker = CsvWorkerThread(self.frame, CsvThreadEvent)
@@ -132,12 +132,12 @@ class CsvPanel(BasePanel):
         self.gauge_ctrl.SetValue(0)
 
         if not event.result:
-            logger.error("CSV変換処理に失敗しました。", decoration=MLogger.DECORATION_BOX)
+            logger.error("CSV转换处理失败。", decoration=MLogger.DECORATION_BOX)
             
             event.Skip()
             return False
 
-        logger.info("CSV変換が完了しました", decoration=MLogger.DECORATION_BOX, title="OK")
+        logger.info("CSV转换完成", decoration=MLogger.DECORATION_BOX, title="完成")
 
         # 出力先をデフォルトに戻す
         if sys.stdout != self.frame.file_panel_ctrl.console_ctrl:

@@ -51,7 +51,7 @@ pip install pypiwin32==223
 pip install pyinstaller==4.1
 
 pip install --upgrade setuptools
-
+pip install --upgrade numpy
 --------------------------
 
 [cypthon”Å]

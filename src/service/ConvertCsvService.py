@@ -23,7 +23,7 @@ class ConvertCsvService():
         logging.basicConfig(level=self.options.logging_level, format="%(message)s [%(module_name)s]")
 
         try:
-            service_data_txt = "CSV変換処理実行\n------------------------\nexeバージョン: {version_name}\n".format(version_name=self.options.version_name) \
+            service_data_txt = "执行CSV转换处理\n------------------------\nexe版本: {version_name}\n".format(version_name=self.options.version_name) \
 
             service_data_txt = "{service_data_txt}　　VMD: {vmd}\n".format(service_data_txt=service_data_txt,
                                     vmd=os.path.basename(self.options.motion.path)) # noqa
@@ -35,9 +35,9 @@ class ConvertCsvService():
 
             return result
         except SizingException as se:
-            logger.error("CSV変換処理が処理できないデータで終了しました。\n\n%s", se.message, decoration=MLogger.DECORATION_BOX)
+            logger.error("转换以CSV无法处理的数据结束。\n\n%s", se.message, decoration=MLogger.DECORATION_BOX)
         except Exception:
-            logger.critical("CSV変換処理が意図せぬエラーで終了しました。\n\n%s", traceback.format_exc(), decoration=MLogger.DECORATION_BOX)
+            logger.critical("CSV转换处理以意外错误结束。\n\n%s", traceback.format_exc(), decoration=MLogger.DECORATION_BOX)
         finally:
             logging.shutdown()
 
@@ -51,7 +51,7 @@ class ConvertCsvService():
         dt_now = datetime.now()
 
         if self.options.motion.motion_cnt == self.options.motion.morph_cnt == self.options.motion.camera_cnt == 0:
-            logger.warning("出力可能なモーションデータ（ボーン・モーフ・カメラ）がありません", decoration=MLogger.DECORATION_BOX)
+            logger.warning("没有可导出的（骨骼，表情，摄像机）动作数据。", decoration=MLogger.DECORATION_BOX)
 
         if self.options.motion.motion_cnt > 0:
             # ボーンモーションがある場合、ボーンモーション出力
@@ -76,7 +76,7 @@ class ConvertCsvService():
                         f.write(s)
                         f.write("\n")
 
-            logger.info("ボーンモーションCSV: %s", bone_fpath, decoration=MLogger.DECORATION_BOX)
+            logger.info("骨骼动作CSV: %s", bone_fpath, decoration=MLogger.DECORATION_BOX)
 
         if self.options.motion.morph_cnt > 0:
             # モーフ出力
@@ -96,7 +96,7 @@ class ConvertCsvService():
                         f.write(s)
                         f.write("\n")
 
-            logger.info("モーフモーションCSV: %s", morph_fpath, decoration=MLogger.DECORATION_BOX)
+            logger.info("表情动作CSV: %s", morph_fpath, decoration=MLogger.DECORATION_BOX)
                     
         if self.options.motion.camera_cnt > 0:
             # カメラ出力
@@ -118,7 +118,7 @@ class ConvertCsvService():
                     f.write(s)
                     f.write("\n")
 
-            logger.info("カメラモーションCSV: %s", camera_fpath, decoration=MLogger.DECORATION_BOX)
+            logger.info("摄相机动作CSV: %s", camera_fpath, decoration=MLogger.DECORATION_BOX)
                     
         return True
 

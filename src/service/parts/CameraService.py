@@ -27,7 +27,7 @@ class CameraService():
         self.options = options
 
     def execute(self):
-        logger.info("カメラ補正　", decoration=MLogger.DECORATION_LINE)
+        logger.info("相机校正　", decoration=MLogger.DECORATION_LINE)
 
         try:
             # 腕処理対象データセットを取得
@@ -36,7 +36,7 @@ class CameraService():
 
             if len(self.target_data_set_idxs) == 0:
                 # データセットがない場合、処理スキップ
-                logger.warning("カメラ補正ができるファイルセットが見つからなかったため、カメラ補正をスキップします。", decoration=MLogger.DECORATION_BOX)
+                logger.warning("因为找不到可以进行相机校正的文件，所以跳过相机校正。", decoration=MLogger.DECORATION_BOX)
                 return True
 
             self.camera_options = {}
@@ -53,7 +53,7 @@ class CameraService():
                     # 前回と同じカメラ位置の場合、前回のサイジング済みカメラ位置コピー
                     past_cf = self.options.camera_motion.cameras[prev_fno]
                     if past_cf.org_length == cf.length and past_cf.org_position == cf.position and past_cf.euler == cf.euler:
-                        logger.info("%sフレーム目 前位置・距離コピー", fno)
+                        logger.info("第%s帧 前位置・距离复制", fno)
                         cf.position = past_cf.position.copy()
                         cf.length = past_cf.length
                         continue
@@ -74,17 +74,17 @@ class CameraService():
                 self.options.now_process += 1
                 self.options.now_process_ctrl.write(str(self.options.now_process))
 
-                self.options.tree_process_dict["カメラ補正"] = True
+                self.options.tree_process_dict["相机校正"] = True
             
             return True
         except MKilledException as ke:
             raise ke
         except SizingException as se:
-            logger.error("サイジング処理が処理できないデータで終了しました。\n\n%s", se.message)
+            logger.error("无法处理尺寸调整的数据结束。\n\n%s", se.message)
             return se
         except Exception as e:
             import traceback
-            logger.error("サイジング処理が意図せぬエラーで終了しました。\n\n%s", traceback.format_exc())
+            logger.error("尺寸调整处理以意外错误结束。\n\n%s", traceback.format_exc())
             raise e
     
     # 変換先モデル用カメラ作成
@@ -195,7 +195,7 @@ class CameraService():
 
                 cnt += 1
 
-        logger.info("%sフレーム目 原点比率: %s, 距離比率: %s, 注視点: %s-%s, 上辺: %s-%s, 下辺: %s-%s, 距離オフセット: %s, 視野角オフセット: %s", \
+        logger.info("第%s帧 原点比率: %s, 距离比率: %s, 注视点: %s-%s, 上边: %s-%s, 下边: %s-%s, 距离偏移: %s, 视角偏移: %s", \
                     cf.fno, round(pos_ratio, 5), round(length_ratio, 5), (nearest_data_set_idx + 1), nearest_bone_name.replace("実体", ""), \
                     (top_data_set_idx + 1), top_bone_name.replace("実体", ""), (bottom_data_set_idx + 1), bottom_bone_name.replace("実体", ""), \
                     round(offset_length, 5), offset_angle)
@@ -688,10 +688,10 @@ class CameraService():
         
     def calc_ratio(self, data_set_idx: int, model: PmxModel, model_type: str, camera_offset_y: float):
         if model.head_top_vertex.index < 0:
-            logger.warning("【No.%s】%sモデルの頭頂頂点INDEXが見つからなかったため、頭ボーン＋上半身半分の位置で代用します。\n" \
-                           + "全長Yオフセットで頭頂位置を調整すると、カメラの見切れ等が少なくなります。", (data_set_idx + 1), model_type)
+            logger.warning("【No.%s】%s由于找不到模型的头顶顶点INDEX，所以用头骨+上半身一半的位置代替。\n" \
+                           + "用全身长Y偏移调整头顶位置的话，相机的看不见的情况会变少。", (data_set_idx + 1), model_type)
         else:
-            logger.info("【No.%s】%sモデルの頭頂頂点INDEX: %s (%s)", (data_set_idx + 1), model_type, model.head_top_vertex.index, \
+            logger.info("【No.%s】%s模型的头顶顶点INDEX: %s (%s)", (data_set_idx + 1), model_type, model.head_top_vertex.index, \
                         model.head_top_vertex.position.to_log())
         
         face_length = 1

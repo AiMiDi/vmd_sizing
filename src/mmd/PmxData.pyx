@@ -1140,16 +1140,16 @@ cdef class PmxModel:
 
         target_bones = ["左腕", "左ひじ", "左手首", "右腕", "右ひじ", "右手首"]
 
-        cannot_sizing = "腕系処理をスキップします。\n腕系処理（腕スタンス補正・捩り分散・接触回避・位置合わせ）を実行したい場合、\n腕タブのチェックスキップFLGをONにして再実行してください。"
+        cannot_sizing = "跳过手臂系统处理。\n腕部处理（腕スタンス校正・分散旋转骨・接触回避・对齐）要强制执行时、\n请将手臂标签的检查跳过FLG设为ON再执行。"
 
         if not set(target_bones).issubset(self.bones.keys()):
-            logger.warning("腕・ひじ・手首の左右ボーンが揃ってないため、%s\nモデル: %s", cannot_sizing, self.name, decoration=MLogger.DECORATION_BOX)
+            logger.warning("腕・ひじ・手首的左右骨骼不齐、%s\n模型: %s", cannot_sizing, self.name, decoration=MLogger.DECORATION_BOX)
             return False
         
         for bone_name in self.bones.keys():
             if ("腕IK" in bone_name or "腕ＩＫ" in bone_name or "うでIK" in bone_name or "うでＩＫ" in bone_name or "腕XIK" in bone_name):
                 # 腕IKが入ってて、かつそれが表示されてる場合、NG
-                logger.warning("モデルに「腕IK」に類するボーンが含まれているため、%s\nモデル: %s", cannot_sizing, self.name, decoration=MLogger.DECORATION_BOX)
+                logger.warning("模型中有「腕IK」之类的骨骼，因此、%s\n模型: %s", cannot_sizing, self.name, decoration=MLogger.DECORATION_BOX)
                 return False
 
         return True
@@ -1183,7 +1183,7 @@ cdef class PmxModel:
                 return reversed_links
         
         # 最後まで回しても取れなかった場合、エラー
-        raise SizingException("ボーンリンクの生成に失敗しました。モデル「%s」に「%s」のボーンがあるか確認してください。" % (self.name, ",".join(target_bone_names)))
+        raise SizingException("生成骨骼IK链失败。请确认模型中「%s」是否有「%s」。" % (self.name, ",".join(target_bone_names)))
 
     # リンク生成
     def create_link_2_top(self, target_bone_name: str, links: BoneLinks, is_defined: bool):
@@ -1207,7 +1207,7 @@ cdef class PmxModel:
         if is_defined:
             # 定義済みの場合
             if target_bone_name not in self.PARENT_BORN_PAIR:
-                raise SizingException("ボーンリンクの生成に失敗しました。モデル「%s」の「%s」ボーンが準標準までの構造ではない可能性があります。" % (self.name, target_bone_name))
+                raise SizingException("生成骨骼IK链失败。模型「%s」的「%s」骨骼可能不是标准结构。" % (self.name, target_bone_name))
                 
             for pname in self.PARENT_BORN_PAIR[target_bone_name]:
                 # 親子関係のボーンリストから親ボーンが存在した場合
@@ -1230,9 +1230,9 @@ cdef class PmxModel:
         try:
             return self.create_link_2_top(parent_name, links, is_defined)
         except RecursionError:
-            raise SizingException("ボーンリンクの生成に失敗しました。\nモデル「{0}」の「{1}」ボーンで以下を確認してください。\n" \
-                                  + "・同じ名前のボーンが複数ないか（ボーンのINDEXがズレるため、サイジングに失敗します）\n" \
-                                  + "・親ボーンに自分の名前と同じ名前のボーンが指定されていないか\n※ PMXEditorの「PMXデータの状態検証」から確認できます。".format(self.name, target_bone_name))
+            raise SizingException("生成骨骼IK链失败。\n模型「{0}」请确认「{1}」骨骼的以下内容。\n" \
+                                  + "・有多个同名的骨骼（因为骨骼的INDEX有偏差，所以尺寸失败）\n" \
+                                  + "・亲骨骼中是否指定了与自己名字相同的名称\n※ 使用PMXEditor的“PMX数据的状态验证”中可以确认。".format(self.name, target_bone_name))
     
     # 子孫ボーンリスト取得
     def get_child_bones(self, target_bone: Bone, bone_list=None):
@@ -1672,7 +1672,7 @@ cdef class PmxModel:
                 bone_idx_list.append(bv.index)
 
         if len(bone_idx_list) == 0:
-            logger.test("bone_name: %s, ウェイト頂点がない", bone_name_list)
+            logger.test("bone_name: %s, 没有有权重的顶点", bone_name_list)
             # ウェイトボーンがない場合、初期値
             return MVector3D(), None, MVector3D(), None, MVector3D(), None, MVector3D(), None, MVector3D(), None, MVector3D(), None, MVector3D(), None
 

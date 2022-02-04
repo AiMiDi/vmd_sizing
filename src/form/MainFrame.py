@@ -44,7 +44,7 @@ class MainFrame(wx.Frame):
         self.worker = None
         self.load_worker = None
 
-        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=u"VMDサイジング ローカル版 {0}".format(self.version_name), \
+        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=u"vmd_sizing {0}".format(self.version_name), \
                           pos=wx.DefaultPosition, size=wx.Size(600, 650), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
         # ファイル履歴読み込み
@@ -79,27 +79,27 @@ class MainFrame(wx.Frame):
 
         # ファイルタブ
         self.file_panel_ctrl = FilePanel(self, self.note_ctrl, 0, self.file_hitories)
-        self.note_ctrl.AddPage(self.file_panel_ctrl, u"ファイル", True)
+        self.note_ctrl.AddPage(self.file_panel_ctrl, u"文件", True)
 
         # 複数タブ
         self.multi_panel_ctrl = MultiPanel(self, self.note_ctrl, 1, self.file_hitories)
-        self.note_ctrl.AddPage(self.multi_panel_ctrl, u"複数", False)
+        self.note_ctrl.AddPage(self.multi_panel_ctrl, u"多人", False)
 
         # モーフタブ
         self.morph_panel_ctrl = MorphPanel(self, self.note_ctrl, 2)
-        self.note_ctrl.AddPage(self.morph_panel_ctrl, u"モーフ", False)
+        self.note_ctrl.AddPage(self.morph_panel_ctrl, u"模型", False)
 
         # 腕タブ
         self.arm_panel_ctrl = ArmPanel(self, self.note_ctrl, 3)
-        self.note_ctrl.AddPage(self.arm_panel_ctrl, u"腕", False)
+        self.note_ctrl.AddPage(self.arm_panel_ctrl, u"手臂", False)
 
         # カメラタブ
         self.camera_panel_ctrl = CameraPanel(self, self.note_ctrl, 4)
-        self.note_ctrl.AddPage(self.camera_panel_ctrl, u"カメラ", False)
+        self.note_ctrl.AddPage(self.camera_panel_ctrl, u"照相机", False)
 
         # 一括タブ
         self.bulk_panel_ctrl = BulkPanel(self, self.note_ctrl, 5)
-        self.note_ctrl.AddPage(self.bulk_panel_ctrl, u"一括", False)
+        self.note_ctrl.AddPage(self.bulk_panel_ctrl, u"批量处理", False)
 
         # CSVタブ
         self.csv_panel_ctrl = CsvPanel(self, self.note_ctrl, 6)
@@ -184,7 +184,7 @@ class MainFrame(wx.Frame):
             self.note_ctrl.SetSelection(self.file_panel_ctrl.tab_idx)
             self.morph_panel_ctrl.fix_tab()
 
-            logger.info("モーフタブ表示準備開始\nファイル読み込み処理を実行します。少しお待ちください....", decoration=MLogger.DECORATION_BOX)
+            logger.info("开始准备模型标签\n执行文件读取处理。请稍等一下....", decoration=MLogger.DECORATION_BOX)
 
             # 読み込み処理実行
             self.load(event, target_idx=0, is_morph=True)
@@ -198,7 +198,7 @@ class MainFrame(wx.Frame):
             self.note_ctrl.SetSelection(self.file_panel_ctrl.tab_idx)
             self.arm_panel_ctrl.fix_tab()
 
-            logger.info("腕タブ表示準備開始\nファイル読み込み処理を実行します。少しお待ちください....", decoration=MLogger.DECORATION_BOX)
+            logger.info("开始准备显示手臂标签\n执行文件读取处理。请稍等一下....", decoration=MLogger.DECORATION_BOX)
 
             # 読み込み処理実行
             self.load(event, target_idx=0, is_arm=True)
@@ -294,16 +294,16 @@ class MainFrame(wx.Frame):
 
         if not result:
             if is_morph or is_arm:
-                tab_name = "モーフ" if is_morph else "腕"
+                tab_name = "模型" if is_morph else "手臂"
                 # 読み込み出来なかったらエラー
-                logger.error("「ファイル」タブで以下のいずれかのファイルパスが指定されていないため、「{tab_name}」タブが開けません。".format(tab_name=tab_name) \
-                             + "\n・調整対象VMDファイル" \
-                             + "\n・作成元モデルPMXファイル" \
-                             + "\n・変換先モデルPMXファイル" \
-                             + "\n既に指定済みの場合、現在読み込み中の可能性があります。" \
-                             + "\n特に長いVMDは読み込みに時間がかかります。" \
-                             + "\n調整に必要な３ファイルすべてを指定して、" \
-                             + "\n「■読み込み成功」のログが出てから、「{tab_name}」タブを開いてください。".format(tab_name=tab_name), decoration=MLogger.DECORATION_BOX)
+                logger.error("「文件」选项卡中没有指定以下任何文件路径、无法打开「{tab_name}」标签。".format(tab_name=tab_name) \
+                             + "\n・调整对象VMD文件" \
+                             + "\n・制作源模型PMX文件" \
+                             + "\n・目标模型PMX文件" \
+                             + "\n如果已经指定，则可能正在导入。" \
+                             + "\n在VMD读取上花费的时间特别长。" \
+                             + "\n指定所有调整所需的三个文件、" \
+                             + "\n「■读取成功」的日志出来后、再打开「{tab_name}」选项卡。".format(tab_name=tab_name), decoration=MLogger.DECORATION_BOX)
 
             # タブ移動可
             self.release_tab()
@@ -314,7 +314,7 @@ class MainFrame(wx.Frame):
 
         # 読み込み開始
         if self.load_worker:
-            logger.error("まだ処理が実行中です。終了してから再度実行してください。", decoration=MLogger.DECORATION_BOX)
+            logger.error("处理还在执行中。请结束后再次执行。", decoration=MLogger.DECORATION_BOX)
         else:
             # ファイルタブの処理対象VMD/VPDの実値設定
             target_path = self.get_target_vmd_path(target_idx)
@@ -325,7 +325,7 @@ class MainFrame(wx.Frame):
                 self.file_panel_ctrl.file_set.set_output_vmd_path(event)
 
             # 停止ボタンに切り替え
-            self.file_panel_ctrl.check_btn_ctrl.SetLabel("読み込み処理停止")
+            self.file_panel_ctrl.check_btn_ctrl.SetLabel("停止读取")
             self.file_panel_ctrl.check_btn_ctrl.Enable()
 
             # 別スレッドで実行
@@ -348,7 +348,7 @@ class MainFrame(wx.Frame):
         self.file_panel_ctrl.gauge_ctrl.SetValue(0)
 
         # チェックボタンに切り替え
-        self.file_panel_ctrl.check_btn_ctrl.SetLabel("変換前チェック")
+        self.file_panel_ctrl.check_btn_ctrl.SetLabel("转换前检查")
         self.file_panel_ctrl.check_btn_ctrl.Enable()
 
         if not event.result:
@@ -371,7 +371,7 @@ class MainFrame(wx.Frame):
             event.Skip()
             return False
         
-        logger.info("ファイルデータ読み込みが完了しました", decoration=MLogger.DECORATION_BOX, title="OK")
+        logger.info("文件数据读取完成", decoration=MLogger.DECORATION_BOX, title="完成")
 
         if event.is_exec:
             # そのまま実行する場合、サイジング実行処理に遷移
@@ -391,10 +391,10 @@ class MainFrame(wx.Frame):
             self.file_panel_ctrl.fix_tab()
 
             if self.worker:
-                logger.error("まだ処理が実行中です。終了してから再度実行してください。", decoration=MLogger.DECORATION_BOX)
+                logger.error("处理还在执行中。请结束后再次执行。", decoration=MLogger.DECORATION_BOX)
             else:
                 # 停止ボタンに切り替え
-                self.file_panel_ctrl.exec_btn_ctrl.SetLabel("VMDサイジング停止")
+                self.file_panel_ctrl.exec_btn_ctrl.SetLabel("停止VMD尺寸调整")
                 self.file_panel_ctrl.exec_btn_ctrl.Enable()
 
                 # 別スレッドで実行
@@ -415,7 +415,7 @@ class MainFrame(wx.Frame):
             # 終了音を鳴らす
             self.sound_finish()
 
-            logger.info("\n処理時間: %s", self.show_worked_time())
+            logger.info("\n处理时间: %s", self.show_worked_time())
         
             event.Skip()
             return True
@@ -423,11 +423,11 @@ class MainFrame(wx.Frame):
     # スレッド実行結果
     def on_exec_result(self, event: wx.Event):
         # 実行ボタンに切り替え
-        self.file_panel_ctrl.exec_btn_ctrl.SetLabel("VMDサイジング実行")
+        self.file_panel_ctrl.exec_btn_ctrl.SetLabel("执行VMD尺寸调整")
         self.file_panel_ctrl.exec_btn_ctrl.Enable()
 
         self.elapsed_time += event.elapsed_time
-        worked_time = "\n処理時間: {0}".format(self.show_worked_time())
+        worked_time = "\n处理时间: {0}".format(self.show_worked_time())
         logger.info(worked_time)
 
         if self.is_out_log and event.output_log_path and os.path.exists(event.output_log_path):
@@ -484,8 +484,8 @@ class MainFrame(wx.Frame):
 
     def on_popup_finger_warning(self, event: wx.Event):
         if not self.popuped_finger_warning:
-            dialog = wx.MessageDialog(self, "複数人数モーションで指位置合わせがONになっています。\n指の数だけ組み合わせが膨大になり時間がかかりますが、" \
-                                      + "その割に余計な指に反応して綺麗になりません。よろしいですか？", style=wx.YES_NO | wx.ICON_WARNING)
+            dialog = wx.MessageDialog(self, "多人动作时手指对准为开启。\n手指的数量组合会变得庞大，需要大量时间" \
+                                      + "相对的，对多余的手指有反应，可能会不干净。确定执行吗？", style=wx.YES_NO | wx.ICON_WARNING)
             if dialog.ShowModal() == wx.ID_NO:
                 # 指位置合わせOFF
                 self.arm_panel_ctrl.arm_alignment_finger_flg_ctrl.SetValue(0)

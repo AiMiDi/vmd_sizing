@@ -69,7 +69,7 @@ cdef class ArmAvoidanceService:
 
         if len(self.target_data_set_idxs) == 0:
             # データセットがない場合、処理スキップ
-            logger.warning("接触回避ができるファイルセットが見つからなかったため、処理をスキップします。", decoration=MLogger.DECORATION_BOX)
+            logger.warning("由于找不到可避免接触的解，跳过处理。", decoration=MLogger.DECORATION_BOX)
             return True
         
         self.avoidance_options = {}
@@ -108,13 +108,13 @@ cdef class ArmAvoidanceService:
     # 接触回避
     cpdef bint execute_avoidance_pool(self, int data_set_idx, str direction):
         try:
-            # 接触回避準備
+            # 准备接触回避
             all_avoidance_axis = self.prepare_avoidance_dataset(data_set_idx, direction)
 
             # 接触回避処理
             self.execute_avoidance(data_set_idx, direction, all_avoidance_axis)
 
-            # # 接触回避準備
+            # # 准备接触回避
             # pfun = profile(self.prepare_avoidance_dataset)
             # all_avoidance_axis = pfun(data_set_idx, direction)
 
@@ -523,9 +523,9 @@ cdef class ArmAvoidanceService:
 
         return True
 
-    # 接触回避準備
+    # 准备接触回避
     cpdef dict prepare_avoidance_dataset(self, int data_set_idx, str direction):
-        logger.info("接触回避準備【No.%s - %s】", (data_set_idx + 1), direction)
+        logger.info("准备接触回避【No.%s - %s】", (data_set_idx + 1), direction)
 
         cdef int aidx, fno, from_fno, prev_block_fno, to_fno
         cdef double block_x_distance, block_z_plus_distance, x_distance, z_plus_distance, block_z_minus_distance, z_minus_distance
@@ -595,10 +595,10 @@ cdef class ArmAvoidanceService:
                     prev_collisions.append(near_collision)
 
             if fno // 500 > prev_block_fno:
-                logger.count("【No.{0} - 接触回避準備① - {1}】".format(data_set_idx + 1, direction), fno, fnos)
+                logger.count("【No.{0} - 准备接触回避① - {1}】".format(data_set_idx + 1, direction), fno, fnos)
                 prev_block_fno = fno // 500
 
-        logger.count("【No.{0} - 接触回避準備① - {1}】".format(data_set_idx + 1, direction), fno, fnos)
+        logger.count("【No.{0} - 准备接触回避① - {1}】".format(data_set_idx + 1, direction), fno, fnos)
 
         prev_block_fno = 0
         all_avoidance_axis = {}
@@ -632,10 +632,10 @@ cdef class ArmAvoidanceService:
                 logger.debug("aidx: %s, d: %s, from: %s, to: %s, axis: %s, xd: %s, zdp: %s, zdm: %s", aidx, direction, from_fno, to_fno, all_avoidance_axis[from_fno], block_x_distance, block_z_plus_distance, block_z_minus_distance)
                 
             if fno // 1000 > prev_block_fno and fnos[-1] > 0:
-                logger.count("【No.{0} - 接触回避準備② - {1}】".format(data_set_idx + 1, direction), fno, fnos)
+                logger.count("【No.{0} - 准备接触回避② - {1}】".format(data_set_idx + 1, direction), fno, fnos)
                 prev_block_fno = fno // 1000
 
-        logger.count("【No.{0} - 接触回避準備② - {1}】".format(data_set_idx + 1, direction), fno, fnos)
+        logger.count("【No.{0} - 准备接触回避② - {1}】".format(data_set_idx + 1, direction), fno, fnos)
 
         return all_avoidance_axis
 
@@ -704,7 +704,7 @@ cdef class ArmAvoidanceService:
 
                         logger.debug("%s-%s, %s: %s", data_set_idx, direction, rigidbody_name, rigidbody)
 
-                        logger.info("【No.%s】判定対象剛体「%s」", (data_set_idx + 1), rigidbody_name)
+                        logger.info("【No.%s】判定刚体对象「%s」", (data_set_idx + 1), rigidbody_name)
 
         # グローバル位置計算用リンク
         arm_links = []

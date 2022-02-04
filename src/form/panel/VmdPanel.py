@@ -24,23 +24,23 @@ class VmdPanel(BasePanel):
         super().__init__(frame, parent, tab_idx)
         self.convert_vmd_worker = None
 
-        self.description_txt = wx.StaticText(self, wx.ID_ANY, "指定されたCSVファイル（ボーン＋モーフ or カメラ）を、VMDファイルとして出力します。\n" \
-                                             + "モデルモーション（ボーン・モーフ）とカメラモーション（カメラ）は別々に出力できます。\n" \
-                                             + "CSVのフォーマットは、CSVタブで出力したデータと同じものを定義してください。", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.description_txt = wx.StaticText(self, wx.ID_ANY, "将指定的CSV文件（骨骼、表情动画或照相机）作为VMD文件输出。\n" \
+                                             + "可以分别输出模型动作（骨骼、表情动画）和照相机动作（照相机）。\n" \
+                                             + "请定义CSV的格式与CSV标签输出的数据相同。", wx.DefaultPosition, wx.DefaultSize, 0)
         self.sizer.Add(self.description_txt, 0, wx.ALL, 5)
 
         self.static_line = wx.StaticLine(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL)
         self.sizer.Add(self.static_line, 0, wx.EXPAND | wx.ALL, 5)
 
         # CSVファイルコントロール（ボーン）
-        self.bone_csv_file_ctrl = BaseFilePickerCtrl(frame, self, u"CSVファイル（ボーン）", u"CSVファイルを選択してください", ("csv"), wx.FLP_DEFAULT_STYLE, \
-                                                     u"VMDに変換したいボーンモーションのファイルパスを指定してください。", \
+        self.bone_csv_file_ctrl = BaseFilePickerCtrl(frame, self, u"CSV文件（骨骼）", u"请选择CSV文件", ("csv"), wx.FLP_DEFAULT_STYLE, \
+                                                     u"请指定想要转换成VMD的骨骼动作的文件路径。", \
                                                      is_aster=False, is_save=False, set_no=0, required=False)
         self.sizer.Add(self.bone_csv_file_ctrl.sizer, 0, wx.EXPAND | wx.ALL, 0)
 
         # CSVファイルコントロール（モーフ）
-        self.morph_csv_file_ctrl = BaseFilePickerCtrl(frame, self, u"CSVファイル（モーフ）", u"CSVファイルを選択してください", ("csv"), wx.FLP_DEFAULT_STYLE, \
-                                                      u"VMDに変換したいモーフモーションのファイルパスを指定してください。", \
+        self.morph_csv_file_ctrl = BaseFilePickerCtrl(frame, self, u"CSV文件（表情）", u"请选择CSV文件", ("csv"), wx.FLP_DEFAULT_STYLE, \
+                                                      u"请指定想要转换成VMD的表情动作的文件路径。", \
                                                       is_aster=False, is_save=False, set_no=0, required=False)
         self.sizer.Add(self.morph_csv_file_ctrl.sizer, 0, wx.EXPAND | wx.ALL, 0)
 
@@ -48,16 +48,16 @@ class VmdPanel(BasePanel):
         self.sizer.Add(self.static_line2, 0, wx.EXPAND | wx.ALL, 5)
 
         # CSVファイルコントロール（カメラ）
-        self.camera_csv_file_ctrl = BaseFilePickerCtrl(frame, self, u"CSVファイル（カメラ）", u"CSVファイルを選択してください", ("csv"), wx.FLP_DEFAULT_STYLE, \
-                                                       u"VMDに変換したいカメラモーションのファイルパスを指定してください。", \
+        self.camera_csv_file_ctrl = BaseFilePickerCtrl(frame, self, u"CSV文件（照相机）", u"请选择CSV文件", ("csv"), wx.FLP_DEFAULT_STYLE, \
+                                                       u"请指定想要转换成VMD的相机动作的文件路径。", \
                                                        is_aster=False, is_save=False, set_no=0, required=False)
         self.sizer.Add(self.camera_csv_file_ctrl.sizer, 0, wx.EXPAND | wx.ALL, 0)
 
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         # VMD変換実行ボタン
-        self.vmd_btn_ctrl = wx.Button(self, wx.ID_ANY, u"VMD変換実行", wx.DefaultPosition, wx.Size(200, 50), 0)
-        self.vmd_btn_ctrl.SetToolTip(u"CSVをVMDに変換します。")
+        self.vmd_btn_ctrl = wx.Button(self, wx.ID_ANY, u"执行VMD转换", wx.DefaultPosition, wx.Size(200, 50), 0)
+        self.vmd_btn_ctrl.SetToolTip(u"将CSV转换成VMD。")
         self.vmd_btn_ctrl.Bind(wx.EVT_BUTTON, self.on_convert_vmd)
         btn_sizer.Add(self.vmd_btn_ctrl, 0, wx.ALL, 5)
 
@@ -126,7 +126,7 @@ class VmdPanel(BasePanel):
 
         # VMD変換開始
         if self.convert_vmd_worker:
-            logger.error("まだ処理が実行中です。終了してから再度実行してください。", decoration=MLogger.DECORATION_BOX)
+            logger.error("处理还在执行中。请结束后再次执行。", decoration=MLogger.DECORATION_BOX)
         else:
             # 別スレッドで実行
             self.convert_vmd_worker = VmdWorkerThread(self.frame, VmdThreadEvent)
@@ -153,12 +153,12 @@ class VmdPanel(BasePanel):
         self.gauge_ctrl.SetValue(0)
 
         if not event.result:
-            logger.error("VMD変換処理に失敗しました。", decoration=MLogger.DECORATION_BOX)
+            logger.error("VMD转换处理失败了。", decoration=MLogger.DECORATION_BOX)
             
             event.Skip()
             return False
 
-        logger.info("VMD変換が完了しました", decoration=MLogger.DECORATION_BOX, title="OK")
+        logger.info("VMD转换完成了", decoration=MLogger.DECORATION_BOX, title="完成")
 
         # 出力先をデフォルトに戻す
         if sys.stdout != self.frame.file_panel_ctrl.console_ctrl:

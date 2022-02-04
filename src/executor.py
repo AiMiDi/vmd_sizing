@@ -36,9 +36,9 @@ if __name__ == '__main__':
         try:
             SizingService(MOptions.parse(VERSION_NAME)).execute()
         except SizingException as se:
-            print("サイジング処理が処理できないデータで終了しました。\n\n%s", se.message)
+            print("尺寸调整过程以无法处理的数据结束。\n\n%s", se.message)
         except Exception:
-            print("サイジング処理が意図せぬエラーで終了しました。")
+            print("调整大小过程以意外错误结束。")
             print(traceback.format_exc())
         finally:
             logging.shutdown()
@@ -67,22 +67,22 @@ if __name__ == '__main__':
         log_level_name = ""
         if args.verbose == MLogger.FULL:
             # フルデータの場合
-            log_level_name = "（全打ち版）"
+            log_level_name = "（完整版）"
         elif args.verbose == MLogger.DEBUG_FULL:
             # フルデータの場合
-            log_level_name = "（全打ちデバッグ版）"
+            log_level_name = "（完整调试版）"
         elif args.verbose == MLogger.DEBUG:
             # テスト（デバッグ版）の場合
-            log_level_name = "（デバッグ版）"
+            log_level_name = "（调试版）"
         elif args.verbose == MLogger.TIMER:
             # 時間計測の場合
-            log_level_name = "（タイマー版）"
+            log_level_name = "（定时器版）"
         elif not is_saving:
             # 省エネOFFの場合
-            log_level_name = "（ハイスペック版）"
+            log_level_name = "（高规格版）"
         elif is_out_log:
             # ログありの場合
-            log_level_name = "（ログあり版）"
+            log_level_name = "（日志版）"
 
         now_version_name = "{0}{1}".format(VERSION_NAME, log_level_name)
 
