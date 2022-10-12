@@ -10,9 +10,9 @@ VMDサイジングの中国語バージョン
 https://github.com/miu200521358/vmd_sizing
 https://www.nicovideo.jp/watch/sm37848503
 
-## Dev Env
+## Development environment configuration
 
-See envs_config/rm.txt
+See [envs_config](envs_config/rm.txt)
 
 ## Dependencies
 
