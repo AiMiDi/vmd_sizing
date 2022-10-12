@@ -29,7 +29,7 @@ class MoveService():
                     # モーションデータが無い場合、処理スキップ
                     continue
 
-                logger.info("移動補正　【No.%s】", (data_set_idx + 1), decoration=MLogger.DECORATION_LINE)
+                logger.info("移动比例尺校正　【No.%s】", (data_set_idx + 1), decoration=MLogger.DECORATION_LINE)
 
                 # センターのY軸オフセットを計算
                 self.set_center_y_offset(data_set_idx, data_set)
@@ -49,7 +49,7 @@ class MoveService():
                     self.options.now_process_ctrl.write(str(self.options.now_process))
 
                     proccess_key = "【No.{0}】{1}({2})".format(data_set_idx + 1, os.path.basename(data_set.motion.path), data_set.rep_model.name)
-                    self.options.tree_process_dict[proccess_key]["移動縮尺補正"] = True
+                    self.options.tree_process_dict[proccess_key]["移动比例尺校正"] = True
                 
         concurrent.futures.wait(futures, timeout=None, return_when=concurrent.futures.FIRST_EXCEPTION)
 
@@ -83,17 +83,17 @@ class MoveService():
                 bf.position = rep_global_mats[bone_name] * local_pos
 
             if len(fnos) > 0:
-                logger.info("移動補正:終了【No.%s - %s】", data_set_idx + 1, bone_name)
+                logger.info("移动比例尺校正:完成【No.%s - %s】", data_set_idx + 1, bone_name)
             
             return True
         except MKilledException as ke:
             raise ke
         except SizingException as se:
-            logger.error("サイジング処理が処理できないデータで終了しました。\n\n%s", se.message)
+            logger.error("无法处理移动比例尺校正的数据结束。\n\n%s", se.message)
             return se
         except Exception as e:
             import traceback
-            logger.error("サイジング処理が意図せぬエラーで終了しました。\n\n%s", traceback.format_exc())
+            logger.error("移动比例尺校正处理以意外错误结束。\n\n%s", traceback.format_exc())
             raise e
 
     def set_leg_ik_offset(self, data_set_idx: int, data_set: MOptionsDataSet):
@@ -194,11 +194,11 @@ class MoveService():
                 data_set.rep_model.bones["センター"].local_offset.setY(offset_y)
                 logger.test("local_offset %s", data_set.rep_model.bones["センター"].local_offset)
 
-                logger.info("【No.%s】センターYオフセット: %s", (data_set_idx + 1), offset_y)
+                logger.info("【No.%s】センターY偏移: %s", (data_set_idx + 1), offset_y)
 
                 return
 
-            logger.info("【No.%s】センターYオフセットなし", (data_set_idx + 1))
+            logger.info("【No.%s】センターY无偏移", (data_set_idx + 1))
 
     # センターZオフセット計算
     def set_center_z_offset(self, data_set_idx: int, data_set: MOptionsDataSet):
@@ -247,11 +247,11 @@ class MoveService():
             data_set.rep_model.bones["センター"].local_offset.setZ(local_offset_z)
             logger.test("local_offset %s", data_set.rep_model.bones["センター"].local_offset)
 
-            logger.info("【No.%s】センターZオフセット: %s", (data_set_idx + 1), local_offset_z)
+            logger.info("【No.%s】センターZ偏移: %s", (data_set_idx + 1), local_offset_z)
 
             return
 
-        logger.info("【No.%s】センターZオフセットなし", (data_set_idx + 1))
+        logger.info("【No.%s】センターZ无偏移", (data_set_idx + 1))
 
 
 

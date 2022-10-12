@@ -66,24 +66,24 @@ class SizingWorkerThread(BaseWorkerThread):
 
                 if not self.frame.camera_panel_ctrl.camera_only_flg_ctrl.GetValue():
                     # 1件目のモーションとモデル
-                    self.frame.file_panel_ctrl.tree_process_dict[proccess_key] = {"移動縮尺補正": False}
+                    self.frame.file_panel_ctrl.tree_process_dict[proccess_key] = {"移动比例修正": False}
 
                     total_process += 2                                                                                      # 基本補正・腕スタンス補正
                     if self.frame.file_panel_ctrl.file_set.org_model_file_ctrl.title_parts_ctrl.GetValue() > 0:
                         total_process += len(self.frame.file_panel_ctrl.file_set.get_selected_stance_details())             # スタンス追加補正
-                        self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["スタンス追加補正"] = {}
+                        self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["姿势追加修正"] = {}
 
                         for v in self.frame.file_panel_ctrl.file_set.get_selected_stance_details():
-                            self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["スタンス追加補正"][v] = False
+                            self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["姿势追加修正"][v] = False
 
-                    self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["腕スタンス補正"] = False
+                    self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["手臂姿势校正"] = False
 
                     total_process += self.frame.file_panel_ctrl.file_set.rep_model_file_ctrl.title_parts_ctrl.GetValue()    # 捩り分散
                     if self.frame.file_panel_ctrl.file_set.rep_model_file_ctrl.title_parts_ctrl.GetValue() == 1:
-                        self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["捩り分散"] = False
+                        self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["分散旋转骨"] = False
                     
                     if self.frame.arm_panel_ctrl.arm_process_flg_avoidance.GetValue() > 0:
-                        self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["接触回避"] = False
+                        self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["避免接触"] = False
 
                     if morph_seted:
                         total_process += 1  # モーフ置換
@@ -118,28 +118,28 @@ class SizingWorkerThread(BaseWorkerThread):
                         file_set.org_model_file_ctrl.data.digest, file_set.rep_model_file_ctrl.data.digest)   # noqa
 
                     if not self.frame.camera_panel_ctrl.camera_only_flg_ctrl.GetValue():
-                        self.frame.file_panel_ctrl.tree_process_dict[proccess_key] = {"移動縮尺補正": False}
+                        self.frame.file_panel_ctrl.tree_process_dict[proccess_key] = {"移动比例修正": False}
 
                         total_process += 2                                                                          # 基本補正・腕スタンス補正
                         if file_set.org_model_file_ctrl.title_parts_ctrl.GetValue() > 0:
                             total_process += len(file_set.get_selected_stance_details())                            # スタンス追加補正
-                            self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["スタンス追加補正"] = {}
+                            self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["姿势追加修正"] = {}
 
                             for v in file_set.get_selected_stance_details():
-                                self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["スタンス追加補正"][v] = False
+                                self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["姿势追加修正"][v] = False
 
                         total_process += file_set.rep_model_file_ctrl.title_parts_ctrl.GetValue()                   # 捩り分散
                         if file_set.rep_model_file_ctrl.title_parts_ctrl.GetValue() == 1:
-                            self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["捩り分散"] = False
+                            self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["分散旋转骨"] = False
 
-                        self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["腕スタンス補正"] = False
+                        self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["手臂姿势校正"] = False
 
                         if self.frame.arm_panel_ctrl.arm_process_flg_avoidance.GetValue() > 0:
-                            self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["接触回避"] = False
+                            self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["避免接触"] = False
 
                         if morph_seted:
                             total_process += 1  # モーフ置換
-                            self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["モーフ置換"] = False
+                            self.frame.file_panel_ctrl.tree_process_dict[proccess_key]["表情替换"] = False
 
                     camera_offset_y = 0
                     camera_org_model = file_set.org_model_file_ctrl.data
@@ -166,11 +166,11 @@ class SizingWorkerThread(BaseWorkerThread):
             total_process += self.frame.arm_panel_ctrl.arm_process_flg_avoidance.GetValue() * len(data_set_list)    # 接触回避
             total_process += self.frame.arm_panel_ctrl.arm_process_flg_alignment.GetValue()                         # 位置合わせ
             if not self.frame.camera_panel_ctrl.camera_only_flg_ctrl.GetValue() and self.frame.arm_panel_ctrl.arm_process_flg_alignment.GetValue() > 0:
-                self.frame.file_panel_ctrl.tree_process_dict["位置合わせ"] = False
+                self.frame.file_panel_ctrl.tree_process_dict["对齐"] = False
 
             if len(now_camera_path) > 0:
                 total_process += 1                                                                                  # カメラ
-                self.frame.file_panel_ctrl.tree_process_dict["カメラ補正"] = False
+                self.frame.file_panel_ctrl.tree_process_dict["摄相机校正"] = False
 
             self.options = MOptions(\
                 version_name=self.frame.version_name, \
@@ -209,7 +209,7 @@ class SizingWorkerThread(BaseWorkerThread):
 
             self.elapsed_time = time.time() - start
         except Exception as e:
-            logger.critical("VMDサイジング処理が意図せぬエラーで終了しました。", e, decoration=MLogger.DECORATION_BOX)
+            logger.critical("VMD尺寸处理以意外错误结束。", e, decoration=MLogger.DECORATION_BOX)
         finally:
             try:
                 logger.debug("★★★result: %s, is_killed: %s", self.result, self.is_killed)

@@ -22,10 +22,10 @@ class BaseFilePickerCtrl():
     
     # 拡張子別ワイルドカード
     WILDCARD_DICT = {
-        ("vmd", "vpd"): u"VMD/VPDファイル (*.vmd, *.vpd)|*.vmd;*.vpd|すべてのファイル (*.*)|*.*",
-        ("pmx"): u"PMXファイル (*.pmx)|*.pmx|すべてのファイル (*.*)|*.*",
-        ("vmd"): u"VMDファイル (*.vmd)|*.vmd|すべてのファイル (*.*)|*.*",
-        ("csv"): u"CSVファイル (*.csv)|*.csv|すべてのファイル (*.*)|*.*",
+        ("vmd", "vpd"): u"VMD/VPD文件 (*.vmd, *.vpd)|*.vmd;*.vpd|所有的文件 (*.*)|*.*",
+        ("pmx"): u"PMX文件 (*.pmx)|*.pmx|所有的文件 (*.*)|*.*",
+        ("vmd"): u"VMD文件 (*.vmd)|*.vmd|所有的文件 (*.*)|*.*",
+        ("csv"): u"CSV文件 (*.csv)|*.csv|所有的文件 (*.*)|*.*",
     }
 
     def __init__(self, frame, parent, title, message, file_type, style, tooltip, file_model_spacer=0, \
@@ -85,7 +85,7 @@ class BaseFilePickerCtrl():
         self.file_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         self.file_ctrl = wx.FilePickerCtrl(parent, wx.ID_ANY, wx.EmptyString, message, BaseFilePickerCtrl.WILDCARD_DICT[self.file_type], wx.DefaultPosition, wx.DefaultSize, style)
-        self.file_ctrl.GetPickerCtrl().SetLabel("開く")
+        self.file_ctrl.GetPickerCtrl().SetLabel("打开")
         self.file_ctrl.SetToolTip(tooltip)
 
         self.file_sizer.Add(self.file_ctrl, 1, wx.ALL | wx.EXPAND, 5)
@@ -178,7 +178,7 @@ class BaseFilePickerCtrl():
             # CSVとかのファイルは番号出力なし
             display_set_no = ""
         else:
-            display_set_no = "{0}番目の".format(self.set_no)
+            display_set_no = "{0} 号".format(self.set_no)
 
         if self.is_aster and self.set_no <= 1:
             base_file_path = self.file_ctrl.GetPath()
@@ -189,7 +189,7 @@ class BaseFilePickerCtrl():
                 file_path_list = [p for p in glob.glob(base_file_path) if os.path.isfile(p)]
 
             if len(file_path_list) == 0:
-                logger.error("{0}{1}の条件に合致するファイルが見つかりませんでした。\n入力パス: {2}".format(
+                logger.error("{0}{1}没有找到符合条件的文件。\n路径: {2}".format(
                     display_set_no, self.title, self.file_ctrl.GetPath()), decoration=MLogger.DECORATION_BOX)
                 return False
 
@@ -199,7 +199,7 @@ class BaseFilePickerCtrl():
         
         if not self.is_save and not os.path.exists(file_path):
             if self.required:
-                logger.error("{0}{1}が見つかりませんでした。\n入力パス: {2}".format(
+                logger.error("{0}{1}未找到。\n路径: {2}".format(
                     display_set_no, self.title, self.file_ctrl.GetPath()), decoration=MLogger.DECORATION_BOX)
                 return False
             else:
@@ -207,7 +207,7 @@ class BaseFilePickerCtrl():
                 return True
 
         if not self.is_save and not os.path.isfile(file_path):
-            logger.error("{0}{1}が正常なファイルとして見つかりませんでした。\n入力パス: {2}".format(
+            logger.error("{0}{1}未找到为正常文件。\n路径: {2}".format(
                 display_set_no, self.title, self.file_ctrl.GetPath()), decoration=MLogger.DECORATION_BOX)
             return False
 
@@ -215,7 +215,7 @@ class BaseFilePickerCtrl():
         _, ext = os.path.splitext(os.path.basename(file_path))
 
         if ext[1:].lower() not in self.file_type:
-            logger.error("{0}{1}の拡張子が正しくありません。\n入力パス: {2}\n設定可能拡張子: {3}".format(
+            logger.error("{0}{1}的扩展名不正确。\n路径: {2}\n可用的扩展名: {3}".format(
                 display_set_no, self.title, self.file_ctrl.GetPath(), self.file_type), decoration=MLogger.DECORATION_BOX)
             return False
         
@@ -228,23 +228,23 @@ class BaseFilePickerCtrl():
             dir_path = MFileUtils.get_dir_path(self.file_ctrl.GetPath())
 
         if not os.path.exists(dir_path):
-            logger.error("{0}{1}の親フォルダが見つかりませんでした。\n入力パス: {2}".format(
+            logger.error("{0}{1}的父文件夹未找到。\n路径: {2}".format(
                 display_set_no, self.title, dir_path), decoration=MLogger.DECORATION_BOX)
             return False
 
         if not os.path.isdir(dir_path):
-            logger.error("{0}{1}の親フォルダが正常なフォルダとして見つかりませんでした。\n入力パス: {2}".format(
+            logger.error("{0}{1}的父文件夹未找到为正常文件。\n路径: {2}".format(
                 display_set_no, self.title, dir_path), decoration=MLogger.DECORATION_BOX)
             return False
 
         if not os.access(dir_path, os.W_OK):
-            logger.error("{0}{1}の親フォルダに書き込み権限がありません。\n入力パス: {2}".format(
+            logger.error("{0}{1}的父文件夹没有写权限。\n路径: {2}".format(
                 display_set_no, self.title, dir_path), decoration=MLogger.DECORATION_BOX)
             return False
 
         # 出力系の場合、自身のファイル上書き用の書き込み権限
         if self.is_save and os.path.isfile(self.file_ctrl.GetPath()) and not os.access(self.file_ctrl.GetPath(), os.W_OK):
-            logger.error("{0}{1}に書き込み権限がありません。\n入力パス: {2}".format(
+            logger.error("{0}{1}没有写权限。\n路径: {2}".format(
                 display_set_no, self.title, self.file_ctrl.GetPath()), decoration=MLogger.DECORATION_BOX)
             return False
 
@@ -303,7 +303,7 @@ class BaseFilePickerCtrl():
             elif input_ext.lower() == ".pmx":
                 reader = PmxReader(file_path, is_check=is_check)
             else:
-                logger.error("%s%s 読み込み失敗(拡張子不正): %s", display_set_no, self.title, os.path.basename(file_path), decoration=MLogger.DECORATION_BOX)
+                logger.error("%s%s 读取失败（扩展名错误）: %s", display_set_no, self.title, os.path.basename(file_path), decoration=MLogger.DECORATION_BOX)
                 return False
             
             # ハッシュ値取得
@@ -317,22 +317,22 @@ class BaseFilePickerCtrl():
                 # ハッシュが取得できてて、過去データがないかハッシュが違う場合、読み込み
                 self.data = reader.read_data()
                     
-                logger.info("%s%s 読み込み成功: %s", display_set_no, self.title, os.path.basename(file_path))
+                logger.info("%s%s 读取成功: %s", display_set_no, self.title, os.path.basename(file_path))
                 return True
             elif new_data_digest and self.data and self.data.digest == new_data_digest:
                 # ハッシュが同じ場合、そのままスルー
-                logger.info("%s%s 読み込み成功: %s", display_set_no, self.title, os.path.basename(file_path))
+                logger.info("%s%s 读取成功: %s", display_set_no, self.title, os.path.basename(file_path))
                 return True
         except MKilledException:
-            logger.warning("読み込み処理を中断します。", decoration=MLogger.DECORATION_BOX)
+            logger.warning("停止读取。", decoration=MLogger.DECORATION_BOX)
         except SizingException as se:
-            logger.error("サイジング処理が処理できないデータで終了しました。\n\n%s", se.message, decoration=MLogger.DECORATION_BOX)
+            logger.error("调整过程以无法处理的数据结束。\n\n%s", se.message, decoration=MLogger.DECORATION_BOX)
         except Exception as e:
-            logger.critical("サイジング処理が意図せぬエラーで終了しました。", e, decoration=MLogger.DECORATION_BOX)
+            logger.critical("循环处理以意外错误结束。", e, decoration=MLogger.DECORATION_BOX)
         finally:
             logging.shutdown()
 
-        logger.error("%s%s 読み込み失敗: %s", display_set_no, self.title, os.path.basename(file_path), decoration=MLogger.DECORATION_BOX)
+        logger.error("%s%s 读取失败: %s", display_set_no, self.title, os.path.basename(file_path), decoration=MLogger.DECORATION_BOX)
         return False
 
 
@@ -349,9 +349,9 @@ class FileModelCtrl():
 
         width = 300 if self.set_no == 1 else 220
 
-        self.txt_ctrl = wx.TextCtrl(parent, wx.ID_ANY, "（未設定）", wx.DefaultPosition, (width, -1), wx.TE_READONLY | wx.BORDER_NONE | wx.WANTS_CHARS)
+        self.txt_ctrl = wx.TextCtrl(parent, wx.ID_ANY, "（未设定）", wx.DefaultPosition, (width, -1), wx.TE_READONLY | wx.BORDER_NONE | wx.WANTS_CHARS)
         self.txt_ctrl.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DLIGHT))
-        self.txt_ctrl.SetToolTip(u"{0}に記録されているモデル名です。\n文字列は選択＆コピー可能です。".format(title))
+        self.txt_ctrl.SetToolTip(u"{0}中记录的模型名称。\n文字可以选择和复制。".format(title))
 
     def set_model(self, target_path):
         self.txt_ctrl.SetValue("（{0}）".format(self.get_model_name()))
@@ -368,7 +368,7 @@ class FileModelCtrl():
                     file_path_list = [p for p in glob.glob(base_file_path) if os.path.isfile(p)]
 
                 if len(file_path_list) == 0:
-                    return "取得失敗"
+                    return "获取失败"
 
                 file_path = file_path_list[0]
             else:
@@ -376,7 +376,7 @@ class FileModelCtrl():
 
             file_name, input_ext = os.path.splitext(os.path.basename(file_path))
 
-            model_name = "未設定"
+            model_name = "未设置"
             if input_ext.lower() == ".vmd":
                 reader = VmdReader(file_path)
             elif input_ext.lower() == ".vpd":
@@ -384,7 +384,7 @@ class FileModelCtrl():
             elif input_ext.lower() == ".pmx":
                 reader = PmxReader(file_path)
             else:
-                return "対象外拡張子"
+                return "非目标扩展名"
             
             try:
                 model_name = reader.read_model_name()
@@ -449,7 +449,7 @@ class MFileDropTarget(wx.FileDropTarget):
         if type(self.parent.file_type) == tuple:
             display_file_type = ",".join(self.parent.file_type)
 
-        logger.error("{0}の拡張子が正しくありません。\n入力ファイル拡張子: {1}\n設定可能拡張子: {2}".format(self.parent.title, input_ext, display_file_type), decoration=MLogger.DECORATION_BOX)
+        logger.error("{0}的扩展名不正确。\n输入文件扩展名: {1}\n可配置扩展名: {2}".format(self.parent.title, input_ext, display_file_type), decoration=MLogger.DECORATION_BOX)
 
         # 許容拡張子外の場合、不許可
         return False

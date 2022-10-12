@@ -27,7 +27,7 @@ class VmdWriter():
                 # モデル名を20byteで切る
                 model_bname = self.data_set.rep_model.name.encode('cp932').decode('shift_jis').encode('shift_jis')[:20]
             except Exception:
-                logger.warning("モデル名に日本語・英語で判読できない文字が含まれているため、仮モデル名を設定します。 %s", self.data_set.rep_model.name, decoration=MLogger.DECORATION_BOX)
+                logger.warning("因为模型名中含有无法用日语、英语辨认的文字，所以设定了临时模型名。 %s", self.data_set.rep_model.name, decoration=MLogger.DECORATION_BOX)
                 model_bname = "Vmd Sized Model".encode('shift_jis')[:20]
 
             # 20文字に満たなかった場合、埋める

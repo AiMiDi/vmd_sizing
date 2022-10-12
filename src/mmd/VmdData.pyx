@@ -354,10 +354,10 @@ cdef class VmdMotion:
 
                 if fno // 500 > prev_sep_fno and fnos[-1] > 0:
                     if data_set_no == 0:
-                        logger.info("-- %sフレーム目:終了(%s％)【全打ち - %s】", fno, round((fno / fnos[-1]) * 100, 3), bone_name)
+                        logger.info("-- 第%s帧：完成(%s％)【全部 - %s】", fno, round((fno / fnos[-1]) * 100, 3), bone_name)
                         prev_sep_fno = fno // 500
                     elif data_set_no > 0:
-                        logger.info("-- %sフレーム目:終了(%s％)【No.%s - 全打ち - %s】", fno, round((fno / fnos[-1]) * 100, 3), data_set_no, bone_name)
+                        logger.info("-- 第%s帧：完成(%s％)【No.%s - 全部 - %s】", fno, round((fno / fnos[-1]) * 100, 3), data_set_no, bone_name)
                         prev_sep_fno = fno // 500
 
     def get_differ_fnos(self, data_set_no: int, bone_name_list: list, limit_degrees: float, limit_length: float):
@@ -425,10 +425,10 @@ cdef class VmdMotion:
 
                 if fno // 2000 > prev_sep_fno and bone_fnos[-1] > 0:
                     if data_set_no > 0:
-                        logger.info("-- %sフレーム目:終了(%s％)【No.%s - キーフレ追加準備 - %s】", fno, round((fno / bone_fnos[-1]) * 100, 3), data_set_no, bone_name)
+                        logger.info("-- 第%s帧：完成(%s％)【No.%s - 增加关键帧 - %s】", fno, round((fno / bone_fnos[-1]) * 100, 3), data_set_no, bone_name)
                         prev_sep_fno = fno // 2000
                     else:
-                        logger.info("-- %sフレーム目:終了(%s％)【キーフレ追加準備 - %s】", fno, round((fno / bone_fnos[-1]) * 100, 3), bone_name)
+                        logger.info("-- 第%s帧：完成(%s％)【增加关键帧- %s】", fno, round((fno / bone_fnos[-1]) * 100, 3), bone_name)
                         prev_sep_fno = fno // 2000
 
         # 重複を除いて再計算
@@ -483,7 +483,7 @@ cdef class VmdMotion:
                         now_bf.rotation = MQuaternion.slerp(prev_bf.rotation, next_bf.rotation, ((now_bf.fno - prev_bf.fno) / (next_bf.fno - prev_bf.fno)))
                 
                 if is_show_log and data_set_no > 0 and fno // 2000 > prev_sep_fno and fnos[-1] > 0:
-                    logger.info("-- %sフレーム目:終了(%s％)【No.%s - 円滑化 - %s】", fno, round((fno / fnos[-1]) * 100, 3), data_set_no, bone_name)
+                    logger.info("-- 第%s帧：完成(%s％)【No.%s - 圆滑化 - %s】", fno, round((fno / fnos[-1]) * 100, 3), data_set_no, bone_name)
                     prev_sep_fno = fno // 2000
 
     def smooth_filter_bf(self, data_set_no: int, bone_name: str, is_rot: bint, is_mov: bint, loop=1, \
@@ -681,12 +681,12 @@ cdef class VmdMotion:
                 if bone_name in self.bones and inf_end_fno in self.bones[bone_name]:
                     self.bones[bone_name][inf_end_fno].key = True
                     self.bones[bone_name][inf_end_fno].interpolation = next_bf.interpolation
-                    logger.debug_info("◇登録 %s: f: %s, next_bf(%s) rot:%s", bone_name, inf_end_fno, next_bf.fno, next_bf.rotation.toEulerAngles4MMD().to_log())
+                    logger.debug_info("◇记录 %s: f: %s, next_bf(%s) rot:%s", bone_name, inf_end_fno, next_bf.fno, next_bf.rotation.toEulerAngles4MMD().to_log())
                 else:
                     self.c_regist_bf(next_bf, bone_name, inf_end_fno, copy_interpolation=True, key=True)
-                    logger.debug_info("☆登録 %s: f: %s, next_bf(%s) rot:%s", bone_name, inf_end_fno, next_bf.fno, next_bf.rotation.toEulerAngles4MMD().to_log())
+                    logger.debug_info("☆记录 %s: f: %s, next_bf(%s) rot:%s", bone_name, inf_end_fno, next_bf.fno, next_bf.rotation.toEulerAngles4MMD().to_log())
                 
-                logger.debug_info("☆%s: f: %s, キーフレ削除: %s-%s", bone_name, inf_end_fno, inf_start_fno + 1, inf_end_fno - 1)
+                logger.debug_info("☆%s: f: %s, 删除关键帧: %s-%s", bone_name, inf_end_fno, inf_start_fno + 1, inf_end_fno - 1)
 
                 for f in range(inf_start_fno + 1, inf_end_fno):
                     # 結合できた場合、区間内を削除
@@ -706,7 +706,7 @@ cdef class VmdMotion:
                     return [inf_start_fno, inf_end_fno]
             else:
                 # 結合できなかった場合、開始を現在の変曲点に移す
-                logger.debug_info("★%s: f: %s(%s), キー:補間曲線失敗: rot_inflection: %s, mx_inflection: %s, my_inflection: %s, mz_inflection: %s", \
+                logger.debug_info("★%s: f: %s(%s), 关键帧插值曲线失败: rot_inflection: %s, mx_inflection: %s, my_inflection: %s, mz_inflection: %s", \
                                 bone_name, inf_start_fno, inf_end_fno, rot_inflection, mx_inflection, my_inflection, mz_inflection)
                
                 if is_sub_remove and not is_prev_success:
@@ -715,13 +715,13 @@ cdef class VmdMotion:
                     activate_fnos = None
 
                     if inf_start_fno < separate_fno - 1:
-                        logger.debug_info(f"【不要キー削除(区分削除:前) - {bone_name}:{inf_start_fno}-{separate_fno}】")
+                        logger.debug_info(f"【删除无用关键帧(分段删除：前) - {bone_name}:{inf_start_fno}-{separate_fno}】")
                         activate_fnos = self.c_remove_unnecessary_bf(data_set_no, bone_name, is_rot, is_mov, offset, rot_diff_limit, mov_diff_limit, inf_start_fno, separate_fno, False, True, is_sub_remove, 
                                                                      r_dict, mx_dict, my_dict, mz_dict, [inf_start_fno, separate_fno])
                         # 前回結合最終点を保持（結合した後ろのを保持）
                         inf_start_fno = separate_fno
                     else:
-                        logger.debug_info(f"【不要キー削除(区分削除:後) - {bone_name}:{separate_fno}-{inf_end_fno}】")
+                        logger.debug_info(f"【删除无用关键帧(分段删除：后) - {bone_name}:{separate_fno}-{inf_end_fno}】")
                         activate_fnos = self.c_remove_unnecessary_bf(data_set_no, bone_name, is_rot, is_mov, offset, rot_diff_limit, mov_diff_limit, separate_fno, inf_end_fno, False, True, is_sub_remove, 
                                                                      r_dict, mx_dict, my_dict, mz_dict, [separate_fno, inf_end_fno])
                         # 前回結合最終点を保持（結合した後ろのを保持）
@@ -740,9 +740,9 @@ cdef class VmdMotion:
 
             if inf_end_fno // 500 > prev_sep_fno and is_show_log:
                 if data_set_no == 0:
-                    logger.count(f"【不要キー削除 - {bone_name}】", inf_end_fno, list(fnos))
+                    logger.count(f"【删除无用关键帧 - {bone_name}】", inf_end_fno, list(fnos))
                 else:
-                    logger.count(f"【No.{data_set_no} - 不要キー削除 - {bone_name}】", inf_end_fno, list(fnos))
+                    logger.count(f"【No.{data_set_no} - 【删除无用关键帧 - {bone_name}】", inf_end_fno, list(fnos))
 
                 prev_sep_fno = inf_end_fno // 500
 
@@ -750,11 +750,11 @@ cdef class VmdMotion:
         if r_start_fno < 0 and r_end_fno < 0:
             # 範囲指定がない場合、全範囲
             activate_fnos = self.get_bone_fnos(bone_name, is_key=True)
-            logger.debug("【不要キー削除 - %s】 active(all): %s", bone_name, activate_fnos)
+            logger.debug("【删除无用关键帧 - %s】 active(all): %s", bone_name, activate_fnos)
         else:
             # 範囲指定がある場合はその範囲内だけ
             activate_fnos = self.get_bone_fnos(bone_name, start_fno=r_start_fno, end_fno=r_end_fno, is_key=True)
-            logger.debug("【不要キー削除 - %s】 active(range): %s", bone_name, activate_fnos)
+            logger.debug("【删除无用关键帧 - %s】 active(range): %s", bone_name, activate_fnos)
         
         return activate_fnos
     
@@ -1225,10 +1225,10 @@ cdef class VmdMotion:
 
                 if fno // 500 > prev_sep_fno and fnos[-1] > 0:
                     if data_set_no == 0:
-                        logger.info("-- %sフレーム目:終了(%s％)【全打ち - %s】", fno, round((fno / fnos[-1]) * 100, 3), morph_name)
+                        logger.info("-- 第%s帧：完成(%s％)【全部 - %s】", fno, round((fno / fnos[-1]) * 100, 3), morph_name)
                         prev_sep_fno = fno // 500
                     elif data_set_no > 0:
-                        logger.info("-- %sフレーム目:終了(%s％)【No.%s - 全打ち - %s】", fno, round((fno / fnos[-1]) * 100, 3), data_set_no, morph_name)
+                        logger.info("-- 第%s帧：完成(%s％)【No.%s - 全部 - %s】", fno, round((fno / fnos[-1]) * 100, 3), data_set_no, morph_name)
                         prev_sep_fno = fno // 500
 
 
@@ -1386,7 +1386,7 @@ cdef class VmdMotion:
                 now_mf.ratio = rxfilter(now_mf.ratio, fno)
 
                 if is_show_log and data_set_no > 0 and fno // 2000 > prev_sep_fno and fnos[-1] > 0:
-                    logger.info("-- %sフレーム目:終了(%s％)【No.%s - フィルタリング - %s(%s)】", fno, round((fno / fnos[-1]) * 100, 3), data_set_no, morph_name, (n + 1))
+                    logger.info("-- 第%s帧：完成(%s％)【No.%s - 过滤 - %s(%s)】", fno, round((fno / fnos[-1]) * 100, 3), data_set_no, morph_name, (n + 1))
                     prev_sep_fno = fno // 2000
 
     # 無効なキーを物理削除する

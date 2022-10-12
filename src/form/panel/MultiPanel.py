@@ -21,22 +21,22 @@ class MultiPanel(BasePanel):
         self.header_panel = wx.Panel(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL)
         self.header_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.description_txt = wx.StaticText(self.header_panel, wx.ID_ANY, "複数人数モーションなどを比率を合わせてサイジングする事ができます。2人目以降を指定して下さい。" \
-                                             + "\n縮尺を強制的に変えてますので、足などが元モーションからズレる場合があります。" \
-                                             + "\n間違えてファイルセットを追加してしまった場合は、４つのファイル欄をすべて空にしてください。", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.description_txt = wx.StaticText(self.header_panel, wx.ID_ANY, "可对多人动作等进行比例调整。请指定第二人及以上。" \
+                                             + "\n因为强制改变了比例尺，所以脚等可能会偏离原动作。" \
+                                             + "\n如果错误地添加了文件集，请将4个文件集全部设为空。", wx.DefaultPosition, wx.DefaultSize, 0)
         self.header_sizer.Add(self.description_txt, 0, wx.ALL, 5)
 
         self.btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         # ファイルセットクリアボタン
-        self.clear_btn_ctrl = wx.Button(self.header_panel, wx.ID_ANY, u"ファイルセットクリア", wx.DefaultPosition, wx.DefaultSize, 0)
-        self.clear_btn_ctrl.SetToolTip(u"既に入力されたデータをすべて空にします。")
+        self.clear_btn_ctrl = wx.Button(self.header_panel, wx.ID_ANY, u"清除文件集", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.clear_btn_ctrl.SetToolTip(u"将已输入的数据全部清空。")
         self.clear_btn_ctrl.Bind(wx.EVT_BUTTON, self.on_clear_set)
         self.btn_sizer.Add(self.clear_btn_ctrl, 0, wx.ALL, 5)
 
         # ファイルセットクリアボタン
-        self.add_btn_ctrl = wx.Button(self.header_panel, wx.ID_ANY, u"ファイルセット追加", wx.DefaultPosition, wx.DefaultSize, 0)
-        self.add_btn_ctrl.SetToolTip(u"サイジングに必要なファイルセットをパネルに追加します。")
+        self.add_btn_ctrl = wx.Button(self.header_panel, wx.ID_ANY, u"添加文件集", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.add_btn_ctrl.SetToolTip(u"将调整尺寸所需的文件添加到面板中。")
         self.add_btn_ctrl.Bind(wx.EVT_BUTTON, self.on_add_set)
         self.btn_sizer.Add(self.add_btn_ctrl, 0, wx.ALL, 5)
 

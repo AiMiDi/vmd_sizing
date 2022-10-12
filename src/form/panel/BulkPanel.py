@@ -30,15 +30,15 @@ class BulkPanel(BasePanel):
     def __init__(self, frame: wx.Frame, parent: wx.Notebook, tab_idx: int):
         super().__init__(frame, parent, tab_idx)
 
-        self.description_txt = wx.StaticText(self, wx.ID_ANY, "設定を一括で指定して、連続して処理させる事ができます。", wx.DefaultPosition, wx.DefaultSize, 0)
+        self.description_txt = wx.StaticText(self, wx.ID_ANY, "可以批量指定设定，使其连续处理。", wx.DefaultPosition, wx.DefaultSize, 0)
         self.sizer.Add(self.description_txt, 0, wx.ALL, 5)
 
         self.static_line = wx.StaticLine(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL)
         self.sizer.Add(self.static_line, 0, wx.EXPAND | wx.ALL, 5)
 
         # バルクBULKファイルコントロール
-        self.bulk_csv_file_ctrl = HistoryFilePickerCtrl(frame, self, u"一括処理用CSV", u"一括処理用CSVファイルを開く", ("csv"), wx.FLP_DEFAULT_STYLE, \
-                                                        u"一括処理用のCSVを指定してください。\nフォーマットは、DLボタンから取得できます。\nD&Dでの指定、開くボタンからの指定、履歴からの選択ができます。", \
+        self.bulk_csv_file_ctrl = HistoryFilePickerCtrl(frame, self, u"批量处理用CSV", u"打开批量处理用CSV文件", ("csv"), wx.FLP_DEFAULT_STYLE, \
+                                                        u"请指定批量处理用的CSV。\n格式可以从DL按钮中获取。\n可通过拖拽指定、打开按钮指定、从历史记录中选择。", \
                                                         file_model_spacer=0, title_parts_ctrl=None, title_parts2_ctrl=None, \
                                                         file_histories_key="bulk_csv", is_change_output=False, is_aster=False, is_save=False, set_no=0)
         self.sizer.Add(self.bulk_csv_file_ctrl.sizer, 0, wx.EXPAND | wx.ALL, 0)
@@ -53,15 +53,15 @@ class BulkPanel(BasePanel):
         btn_sizer.Add(self.save_btn_ctrl, 0, wx.ALL, 5)
 
         # 一括サイジング確認ボタン
-        self.check_btn_ctrl = wx.Button(self, wx.ID_ANY, u"一括サイジング確認", wx.DefaultPosition, wx.Size(150, 50), 0)
-        self.check_btn_ctrl.SetToolTip(u"指定されたCSVデータの設定を確認します。")
+        self.check_btn_ctrl = wx.Button(self, wx.ID_ANY, u"批量处理尺寸确认", wx.DefaultPosition, wx.Size(150, 50), 0)
+        self.check_btn_ctrl.SetToolTip(u"确认指定的CSV数据设置。")
         self.check_btn_ctrl.Bind(wx.EVT_LEFT_DCLICK, self.on_doubleclick)
         self.check_btn_ctrl.Bind(wx.EVT_LEFT_DOWN, self.on_check_click)
         btn_sizer.Add(self.check_btn_ctrl, 0, wx.ALL, 5)
 
         # 一括サイジング実行ボタン
-        self.bulk_btn_ctrl = wx.Button(self, wx.ID_ANY, u"一括サイジング実行", wx.DefaultPosition, wx.Size(150, 50), 0)
-        self.bulk_btn_ctrl.SetToolTip(u"一括でサイジングを実行します")
+        self.bulk_btn_ctrl = wx.Button(self, wx.ID_ANY, u"批量执行", wx.DefaultPosition, wx.Size(150, 50), 0)
+        self.bulk_btn_ctrl.SetToolTip(u"执行批量修改尺寸")
         self.bulk_btn_ctrl.Bind(wx.EVT_LEFT_DCLICK, self.on_doubleclick)
         self.bulk_btn_ctrl.Bind(wx.EVT_LEFT_DOWN, self.on_bulk_click)
         btn_sizer.Add(self.bulk_btn_ctrl, 0, wx.ALL, 5)
@@ -100,7 +100,7 @@ class BulkPanel(BasePanel):
     
     def on_doubleclick(self, event: wx.Event):
         self.timer.Stop()
-        logger.warning("ダブルクリックされました。", decoration=MLogger.DECORATION_BOX)
+        logger.warning("被双击了。", decoration=MLogger.DECORATION_BOX)
         event.Skip(False)
         return False
     
@@ -118,7 +118,7 @@ class BulkPanel(BasePanel):
         # 出力先をファイルパネルのコンソールに変更
         sys.stdout = self.console_ctrl
 
-        if self.bulk_btn_ctrl.GetLabel() == "一括サイジング停止" and self.frame.worker:
+        if self.bulk_btn_ctrl.GetLabel() == "停止批量处理" and self.frame.worker:
             # フォーム無効化
             self.disable()
             # 停止状態でボタン押下時、停止
@@ -133,7 +133,7 @@ class BulkPanel(BasePanel):
             # プログレス非表示
             self.gauge_ctrl.SetValue(0)
 
-            logger.warning("VMDサイジング一括処理を中断します。", decoration=MLogger.DECORATION_BOX)
+            logger.warning("中断VMD尺寸批量处理。", decoration=MLogger.DECORATION_BOX)
             
             event.Skip(False)
         elif not self.frame.worker:
@@ -152,7 +152,7 @@ class BulkPanel(BasePanel):
             
             event.Skip()
         else:
-            logger.error("まだ処理が実行中です。終了してから再度実行してください。", decoration=MLogger.DECORATION_BOX)
+            logger.error("处理还在执行中。请结束后再次执行。", decoration=MLogger.DECORATION_BOX)
             event.Skip(False)
     
     def on_save_click(self, event: wx.Event):
@@ -410,13 +410,13 @@ class BulkPanel(BasePanel):
                     logger.info(service_data_txt, decoration=MLogger.DECORATION_BOX)
 
                 # OKかつ確認のみの場合、出力して終了
-                logger.info("CSVデータの確認が成功しました。", decoration=MLogger.DECORATION_BOX, title="OK")
+                logger.info("CSV数据确认成功。", decoration=MLogger.DECORATION_BOX, title="OK")
 
                 self.enable()
                 self.release_tab()
                 return
         else:
-            logger.error("CSVデータに不整合があるため、処理を中断します", decoration=MLogger.DECORATION_BOX)
+            logger.error("由于CSV数据不匹配，中断处理", decoration=MLogger.DECORATION_BOX)
 
             self.enable()
             self.release_tab()
@@ -426,7 +426,7 @@ class BulkPanel(BasePanel):
     def read_csv_row(self, rows: list, row_no: int, row_idx: int, row_name: str, row_required: bool, row_type: type, row_regex: str, row_regex_str: str, path_exts: tuple):
         try:
             if row_required and (len(rows) < row_idx or not rows[row_idx]):
-                logger.warning("%s行目の%s（%s列目）が設定されていません", row_no + 1, row_name, row_idx + 1)
+                logger.warning("第%s行的%s（第%s列）未设置", row_no + 1, row_name, row_idx + 1)
                 return False, None
             
             try:
@@ -434,22 +434,22 @@ class BulkPanel(BasePanel):
                     pass
             except Exception:
                 row_type_str = "半角整数" if row_type == int else "半角数字"
-                logger.warning("%s行目の%s（%s列目）の型（%s）が合っていません", row_no + 1, row_name, row_idx + 1, row_type_str)
+                logger.warning("第%s行的%s（第%s列）的类型（%s）不匹配", row_no + 1, row_name, row_idx + 1, row_type_str)
                 return False, None
             
             if rows[row_idx] and row_regex and not re.findall(row_regex, rows[row_idx]):
-                logger.warning("%s行目の%s（%s列目）の表示形式（%s）が合っていません", row_no + 1, row_name, row_idx + 1, row_regex_str)
+                logger.warning("第%s行的%s（第%s列）表示形式（%s）不匹配", row_no + 1, row_name, row_idx + 1, row_regex_str)
                 return False, None
 
             if rows[row_idx] and path_exts:
                 if not rows[row_idx] or (not os.path.exists(rows[row_idx]) or not os.path.isfile(rows[row_idx])):
-                    logger.warning("%s行目の%s（%s列目）のファイルが存在していません", row_no + 1, row_name, row_idx + 1)
+                    logger.warning("第%s行的%s（第%s列）的文件不存在", row_no + 1, row_name, row_idx + 1)
                     return False, None
 
                 # ファイル名・拡張子
                 file_name, ext = os.path.splitext(os.path.basename(rows[row_idx]))
                 if (ext not in path_exts):
-                    logger.warning("%s行目の%s（%s列目）のファイル拡張子（%s）が合っていません", row_no + 1, row_name, row_idx + 1, \
+                    logger.warning("第%s行的s（第%s列）文件扩展名（%s）不匹配", row_no + 1, row_name, row_idx + 1, \
                                    ','.join(map(str, path_exts)) if len(path_exts) > 1 else path_exts)
                     return False, None
 
@@ -470,7 +470,7 @@ class BulkPanel(BasePanel):
             
             return True, rows[row_idx]
         except Exception as e:
-            logger.warning("%s行目の%s（%s列目）の読み取りに失敗しました\n%s", row_no + 1, row_name, row_idx + 1, e)
+            logger.warning("第%s行的%s（第%s列）读取失败\n%s", row_no + 1, row_name, row_idx + 1, e)
             return False, None
 
     # 読み込み
@@ -720,10 +720,10 @@ class BulkPanel(BasePanel):
 
         # 読み込み開始
         if self.frame.load_worker:
-            logger.error("まだ処理が実行中です。終了してから再度実行してください。", decoration=MLogger.DECORATION_BOX)
+            logger.error("处理还在执行中。请结束后再次执行。", decoration=MLogger.DECORATION_BOX)
         else:
             # 停止ボタンに切り替え
-            self.frame.file_panel_ctrl.check_btn_ctrl.SetLabel("読み込み処理停止")
+            self.frame.file_panel_ctrl.check_btn_ctrl.SetLabel("停止读取")
             self.frame.file_panel_ctrl.check_btn_ctrl.Enable()
 
             # 別スレッドで実行(次行がない場合、-1で終了フラグ)
@@ -763,7 +763,7 @@ class BulkPanel(BasePanel):
             event.Skip()
             return False
         
-        logger.info("ファイルデータ読み込みが完了しました", decoration=MLogger.DECORATION_BOX, title="OK")
+        logger.info("文件数据读取完成", decoration=MLogger.DECORATION_BOX, title="完成")
 
         # フォーム無効化
         self.frame.file_panel_ctrl.disable()
@@ -771,10 +771,10 @@ class BulkPanel(BasePanel):
         self.frame.file_panel_ctrl.fix_tab()
 
         if self.frame.worker:
-            logger.error("まだ処理が実行中です。終了してから再度実行してください。", decoration=MLogger.DECORATION_BOX)
+            logger.error("处理还在执行中。请结束后再次执行。", decoration=MLogger.DECORATION_BOX)
         else:
             # 停止ボタンに切り替え
-            self.frame.file_panel_ctrl.exec_btn_ctrl.SetLabel("VMDサイジング停止")
+            self.frame.file_panel_ctrl.exec_btn_ctrl.SetLabel("停止VMD尺寸调整")
             self.frame.file_panel_ctrl.exec_btn_ctrl.Enable()
 
             # 別スレッドで実行
@@ -784,7 +784,7 @@ class BulkPanel(BasePanel):
     # スレッド実行結果
     def on_exec_result(self, event: wx.Event):
         # 実行ボタンに切り替え
-        self.frame.file_panel_ctrl.exec_btn_ctrl.SetLabel("VMDサイジング実行")
+        self.frame.file_panel_ctrl.exec_btn_ctrl.SetLabel("执行VMD尺寸调整")
         self.frame.file_panel_ctrl.exec_btn_ctrl.Enable()
 
         if not event.result:
@@ -795,7 +795,7 @@ class BulkPanel(BasePanel):
             return False
         
         self.frame.elapsed_time += event.elapsed_time
-        worked_time = "\n処理時間: {0}".format(self.frame.show_worked_time())
+        worked_time = "\n处理时间: {0}".format(self.frame.show_worked_time())
         logger.info(worked_time)
 
         if self.frame.is_out_log and event.output_log_path and os.path.exists(event.output_log_path):
@@ -838,5 +838,5 @@ class BulkPanel(BasePanel):
         # プログレス非表示
         self.frame.file_panel_ctrl.gauge_ctrl.SetValue(0)
 
-        logger.info("全てのサイジング処理が終了しました", decoration=MLogger.DECORATION_BOX, title="一括処理")
+        logger.info("全部处理进程结束", decoration=MLogger.DECORATION_BOX, title="批量处理")
         

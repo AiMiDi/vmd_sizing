@@ -39,7 +39,7 @@ class VpdReader():
                 if len(m.groups()) > 0:
                     return m.groups()[0]
 
-        return "VPDデータ解析失敗"
+        return "VPD数据解析失败"
 
     def read_data(self):
         # VPDファイルを通常読み込み
@@ -122,11 +122,11 @@ class VpdReader():
             # 終了命令
             raise ke
         except SizingException as se:
-            logger.error("VPD読み込み処理が処理できないデータで終了しました。\n\n%s", se.message, decoration=MLogger.DECORATION_BOX)
+            logger.error("无法处理尺寸调整数据结束。\n\n%s", se.message, decoration=MLogger.DECORATION_BOX)
             return se
         except Exception as e:
             import traceback
-            logger.critical("VPD読み込み処理が意図せぬエラーで終了しました。\n\n%s", traceback.format_exc(), decoration=MLogger.DECORATION_BOX)
+            logger.critical("尺寸调整处理以意外错误结束。\n\n%s", traceback.format_exc(), decoration=MLogger.DECORATION_BOX)
             raise e
 
     # 一行を読み込む

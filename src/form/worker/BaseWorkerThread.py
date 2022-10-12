@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #
 import wx
-import wx.xrc
 from abc import ABCMeta, abstractmethod
 from threading import Thread
 from functools import wraps

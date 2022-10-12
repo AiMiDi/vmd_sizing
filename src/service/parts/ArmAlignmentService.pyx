@@ -105,7 +105,7 @@ cdef class ArmAlignmentService:
 
         if len(self.target_data_set_idxs) == 0:
             # データセットがない場合、処理スキップ
-            logger.warning("位置合わせができるファイルセットが見つからなかったため、位置合わせ処理をスキップします。", decoration=MLogger.DECORATION_BOX)
+            logger.warning("由于找不到可实现对齐的文件集，跳过对齐处理。", decoration=MLogger.DECORATION_BOX)
             return True
 
         # リンク辞書
@@ -113,7 +113,7 @@ cdef class ArmAlignmentService:
         # 処理対象ボーン名リスト
         bone_names = ["センター", "グルーブ"]
 
-        logger.info("位置合わせ　", decoration=MLogger.DECORATION_LINE)
+        logger.info("对齐　", decoration=MLogger.DECORATION_LINE)
 
         try:
             for data_set_idx in self.target_data_set_idxs:
@@ -139,7 +139,7 @@ cdef class ArmAlignmentService:
             # キーフレを重複除外してソートする
             fnos = sorted(list(set(fnos)))
 
-            # 位置合わせ準備
+            # 准备对齐
             all_alignment_group_list, all_messages = self.prepare_alignment(fnos)
 
             # 位置合わせ実行
@@ -149,20 +149,20 @@ cdef class ArmAlignmentService:
                 self.options.now_process += 1
                 self.options.now_process_ctrl.write(str(self.options.now_process))
 
-                self.options.tree_process_dict["位置合わせ"] = True
+                self.options.tree_process_dict["对齐"] = True
 
             return True
         except MKilledException as ke:
             raise ke
         except SizingException as se:
-            logger.error("サイジング処理が処理できないデータで終了しました。\n\n%s", se.message)
+            logger.error("无法处理尺寸调整的数据结束。\n\n%s", se.message)
             return se
         except Exception as e:
             import traceback
-            logger.error("サイジング処理が意図せぬエラーで終了しました。\n\n%s", traceback.format_exc())
+            logger.error("尺寸调整处理以意外错误结束。\n\n%s", traceback.format_exc())
             raise e
 
-    # 位置合わせ準備
+    # 准备对齐
     cdef prepare_alignment(self, list fnos):           
         cdef int from_data_set_idx, to_data_set_idx, alignment_idx, data_set_idx, fidx, from_alignment_idx
         cdef int group_idx, to_alignment_idx, fno, priority, prev_block_fno
@@ -231,10 +231,10 @@ cdef class ArmAlignmentService:
                         all_org_global_effector_matrixs[fno][(data_set_idx, alignment_idx)] = org_global_matrixs[target_link.effector_bone_name]
 
             if fno // 200 > prev_block_fno:
-                logger.count("位置合わせ準備①", fno, fnos)
+                logger.count("准备对齐①", fno, fnos)
                 prev_block_fno = fno // 200
 
-        logger.count("位置合わせ準備①", fno, fnos)
+        logger.count("准备对齐①", fno, fnos)
                     
         all_messages = {}
         all_is_alignment = {}
@@ -314,10 +314,10 @@ cdef class ArmAlignmentService:
                         all_is_alignment[(to_data_set_idx, to_alignment_idx)][fno] = is_alignment or all_is_alignment[(to_data_set_idx, to_alignment_idx)][fno]
 
             if fno // 500 > prev_block_fno:
-                logger.count("位置合わせ準備②", fno, fnos)
+                logger.count("准备对齐②", fno, fnos)
                 prev_block_fno = fno // 500
 
-        logger.count("位置合わせ準備②", fno, fnos)
+        logger.count("准备对齐②", fno, fnos)
 
         all_alignment_group_list = []
         prev_block_fno = 0
@@ -428,7 +428,7 @@ cdef class ArmAlignmentService:
                                 all_messages[fno] = []
 
                             # ログ用情報保持
-                            all_messages[fno].append("○近接あり: f: {0}({1}-{2}:{3}-{4}), 境界: {5}".format(fno, \
+                            all_messages[fno].append("○接近: f: {0}({1}-{2}:{3}-{4}), 边界: {5}".format(fno, \
                                                      (from_data_set_idx + 1), from_target_link.effector_display_bone_name, \
                                                      (to_data_set_idx + 1), to_target_link.effector_display_bone_name, round(distance_ratio, 5)))
 
@@ -436,7 +436,7 @@ cdef class ArmAlignmentService:
                             for ik_links in from_target_link.ik_links_list:
                                 for link_name in ik_links.all().keys():
                                     bf = from_data_set.motion.calc_bf(link_name, fno)
-                                    logger.test("f: %s(%s:%s), 初回確定 now[%s], org[%s]", fno, (from_data_set_idx + 1), link_name, bf.rotation.toEulerAngles().to_log(), \
+                                    logger.test("f: %s(%s:%s), 初次确定 now[%s], org[%s]", fno, (from_data_set_idx + 1), link_name, bf.rotation.toEulerAngles().to_log(), \
                                                 bf.org_rotation.toEulerAngles().to_log())
                                     bf.org_rotation = bf.rotation.copy()
                                     from_data_set.motion.regist_bf(bf, link_name, fno)
@@ -444,7 +444,7 @@ cdef class ArmAlignmentService:
                             for ik_links in to_target_link.ik_links_list:
                                 for link_name in ik_links.all().keys():
                                     bf = to_data_set.motion.calc_bf(link_name, fno)
-                                    logger.test("f: %s(%s:%s), 初回確定 now[%s], org[%s]", fno, (to_data_set_idx + 1), link_name, bf.rotation.toEulerAngles().to_log(), \
+                                    logger.test("f: %s(%s:%s), 初次确定 now[%s], org[%s]", fno, (to_data_set_idx + 1), link_name, bf.rotation.toEulerAngles().to_log(), \
                                                 bf.org_rotation.toEulerAngles().to_log())
                                     bf.org_rotation = bf.rotation.copy()
                                     to_data_set.motion.regist_bf(bf, link_name, fno)
@@ -457,7 +457,7 @@ cdef class ArmAlignmentService:
                                     all_messages[fno] = []
 
                                 # ログ用情報保持
-                                all_messages[fno].append("－近接なし: f: {0}({1}-{2}:{3}-{4}), 境界: {5}".format(fno, \
+                                all_messages[fno].append("－不接近: f: {0}({1}-{2}:{3}-{4}), 边界: {5}".format(fno, \
                                                          (from_data_set_idx + 1), from_target_link.effector_display_bone_name, \
                                                          (to_data_set_idx + 1), to_target_link.effector_display_bone_name, round(distance_ratio, 5)))
 
@@ -466,10 +466,10 @@ cdef class ArmAlignmentService:
                     break
 
             if fno // 500 > prev_block_fno:
-                logger.count("位置合わせ準備③", fno, fnos)
+                logger.count("准备对齐③", fno, fnos)
                 prev_block_fno = fno // 500
         
-        logger.count("位置合わせ準備③", fno, fnos)
+        logger.count("准备对齐③", fno, fnos)
 
         prev_block_fno = 0
 
@@ -571,10 +571,10 @@ cdef class ArmAlignmentService:
                     # data_set.motion.bones[debug_bone_name][fno] = debug_bf
 
             if fno // 500 > prev_block_fno:
-                logger.count("位置合わせ準備④", fno, fnos)
+                logger.count("准备对齐④", fno, fnos)
                 prev_block_fno = fno // 500
 
-        logger.count("位置合わせ準備④", fno, fnos)
+        logger.count("准备对齐④", fno, fnos)
 
         return all_alignment_group_list, all_messages
     
@@ -796,11 +796,11 @@ cdef class ArmAlignmentService:
                                 is_avoidance_elbow_x = is_avoidance_elbow_x or (bf.avoidance == "x" and "ひじ" in link_name)
                             
                     if is_avoidance_elbow_x:
-                        logger.info("--ひじX方向回避済みのため、位置合わせスキップ: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
+                        logger.info("--已回避肘部X方向，跳过位置对齐: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
                         continue
 
                     if is_avoidance_arm_x:
-                        logger.info("--腕X方向回避済みのため、ひじ以降のみ位置合わせ: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
+                        logger.info("--已回避手臂X方向，只调整肘部以后的位置: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
 
                     # IK処理実行
                     for ik_cnt, (ik_links, ik_max_count) in enumerate(zip(target_link.ik_links_list, target_link.ik_count_list)):
@@ -820,7 +820,7 @@ cdef class ArmAlignmentService:
                             #     for link_name, link_bone in now_ik_links.all().items():
                             #         link_bone.degree_limit = 3
                             
-                            logger.debug("IK計算開始(%s): f: %s(%s:%s), 現在[%s], 指定[%s]", now_ik_max_count, fno, (data_set_idx + 1), \
+                            logger.debug("IK计算开始(%s): f: %s(%s:%s), 现在[%s], 指定[%s]", now_ik_max_count, fno, (data_set_idx + 1), \
                                          list(now_ik_links.all().keys()), rep_effector_vec.to_log(), rep_global_effector.to_log())
                             
                             # IK計算実行
@@ -860,13 +860,13 @@ cdef class ArmAlignmentService:
                             # どちらにせよ一旦bf確定
                             for link_name, link_bone in now_ik_links.all().items():
                                 ik_bf = data_set.motion.calc_bf(link_name, fno)
-                                logger.test("f: %s(%s:%s), 一旦確定 now[%s], org[%s]", fno, (data_set_idx + 1), link_name, ik_bf.rotation.toEulerAngles().to_log(), \
+                                logger.test("f: %s(%s:%s), 一旦确定 now[%s], org[%s]", fno, (data_set_idx + 1), link_name, ik_bf.rotation.toEulerAngles().to_log(), \
                                             ik_bf.org_rotation.toEulerAngles().to_log())
                                 data_set.motion.regist_bf(ik_bf, link_name, fno)
 
                             if (prev_rep_diff == MVector3D() or np.sum(np.abs(rep_diff.data())) < np.sum(np.abs(prev_rep_diff.data()))) and \
                                     np.count_nonzero(np.where(np.abs(rep_diff.data()) > (0.2 if data_set.original_xz_ratio > 0.5 else 0.1), 1, 0)) == 0:
-                                logger.debug("☆位置合わせ実行成功(%s): f: %s(%s:%s), 指定[%s], 結果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org: [%s], now_vec: [%s]", \
+                                logger.debug("☆位置合わせ実行成功(%s): f: %s(%s:%s), 指定[%s], 结果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org: [%s], now_vec: [%s]", \
                                                 now_ik_max_count, fno, (data_set_idx + 1), list(now_ik_links.all().keys()), rep_global_effector.to_log(), \
                                                 aligned_rep_effector_vec.to_log(), rep_diff.to_log(), list(dot_near_dict.values()), list(dot_start_dict.values()), \
                                                 start_org_bfs[link_name].rotation.toEulerAngles().to_log(), bf.rotation.toEulerAngles().to_log())
@@ -901,7 +901,7 @@ cdef class ArmAlignmentService:
                             elif (prev_rep_diff == MVector3D() or (prev_rep_diff != MVector3D() and np.sum(np.abs(rep_diff.data())) < np.sum(np.abs(prev_rep_diff.data())))) and \
                                     (np.count_nonzero(np.where(np.abs(rep_diff.data()) > (0.7 if data_set.original_xz_ratio > 0.5 else 0.3), 1, 0)) == 0):
 
-                                logger.debug("☆位置合わせ実行ちょっと失敗採用(%s): f: %s(%s:%s), 指定[%s], 結果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org_vec: [%s], now_vec: [%s]", \
+                                logger.debug("☆位置对齐执行稍有失败，采用(%s): f: %s(%s:%s), 指定[%s], 结果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org_vec: [%s], now_vec: [%s]", \
                                                 now_ik_max_count, fno, (data_set_idx + 1), list(now_ik_links.all().keys()), rep_global_effector.to_log(), \
                                                 aligned_rep_effector_vec.to_log(), rep_diff.to_log(), list(dot_near_dict.values()), list(dot_start_dict.values()), \
                                                 start_org_bfs[link_name].rotation.toEulerAngles().to_log(), bf.rotation.toEulerAngles().to_log())
@@ -933,7 +933,7 @@ cdef class ArmAlignmentService:
 
                                 prev_rep_diff = rep_diff
                             else:
-                                logger.debug("★位置合わせ実行ちょっと失敗不採用(%s): f: %s(%s:%s), 指定[%s], 結果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org_vec: [%s], now_vec: [%s]", \
+                                logger.debug("★位置对齐执行稍有失败，不采用(%s): f: %s(%s:%s), 指定[%s], 结果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org_vec: [%s], now_vec: [%s]", \
                                                 now_ik_max_count, fno, (data_set_idx + 1), list(now_ik_links.all().keys()), rep_global_effector.to_log(), \
                                                 aligned_rep_effector_vec.to_log(), rep_diff.to_log(), list(dot_near_dict.values()), list(dot_start_dict.values()), \
                                                 start_org_bfs[link_name].rotation.toEulerAngles().to_log(), bf.rotation.toEulerAngles().to_log())
@@ -951,7 +951,7 @@ cdef class ArmAlignmentService:
                     if len(is_success) > 0:
                         if is_success.count(True) == 0:
                             # 全てのパターンで失敗してる場合、失敗ログ
-                            logger.info("×位置合わせ失敗: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
+                            logger.info("×位置对齐失败: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
 
                             # 失敗記録
                             results[(fno, data_set_idx, alignment_idx)] = False
@@ -966,10 +966,10 @@ cdef class ArmAlignmentService:
 
                             if len(is_success) > 1 and is_success.count(False) > 0:
                                 # どこかのパターンで失敗している場合、一部成功ログ
-                                logger.info("△位置合わせ一部成功: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
+                                logger.info("△位置对齐部分成功: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
                             else:
                                 # 全部成功している場合、成功ログ
-                                logger.info("○位置合わせ成功: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
+                                logger.info("○位置对齐成功: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
 
             # 結果チェック
             for fidx, fno in enumerate(all_alignment_group["fnos"]):
@@ -1033,7 +1033,7 @@ cdef class ArmAlignmentService:
                                             # 前の成功キーフレがあり、かつ近いの場合、前のキーフレを適用する
                                             prev_bf = data_set.motion.calc_bf(link_name, prev_success_fno)
 
-                                            logger.debug("f: %s, (%s:%s), pfno: %s, nfno: %s, 失敗上書き(前) start now[%s], prev[%s]", fno, (data_set_idx + 1), link_name, \
+                                            logger.debug("f: %s, (%s:%s), pfno: %s, nfno: %s, 覆盖失败(前) start now[%s], prev[%s]", fno, (data_set_idx + 1), link_name, \
                                                          prev_success_fno, next_success_fno, bf.rotation.toEulerAngles().to_log(), prev_bf.rotation.toEulerAngles().to_log())
                                             
                                             bf.rotation = prev_bf.rotation
@@ -1044,7 +1044,7 @@ cdef class ArmAlignmentService:
                                             # 後の成功キーフレがあり、かつ近いの場合、後のキーフレを適用する
                                             next_bf = data_set.motion.calc_bf(link_name, next_success_fno)
 
-                                            logger.debug("f: %s, (%s:%s), pfno: %s, nfno: %s, 失敗上書き(後) start now[%s], next[%s]", fno, (data_set_idx + 1), link_name, \
+                                            logger.debug("f: %s, (%s:%s), pfno: %s, nfno: %s, 覆盖失败(后) start now[%s], next[%s]", fno, (data_set_idx + 1), link_name, \
                                                          prev_success_fno, next_success_fno, bf.rotation.toEulerAngles().to_log(), next_bf.rotation.toEulerAngles().to_log())
 
                                             bf.rotation = next_bf.rotation
@@ -1052,7 +1052,7 @@ cdef class ArmAlignmentService:
                                             # 成功と見なす
                                             results[(fno, data_set_idx, alignment_idx)] = True
                                         else:
-                                            logger.debug("f: %s, (%s:%s), pfno: %s, nfno: %s, 失敗上書き(初) start now[%s], org[%s]", fno, (data_set_idx + 1), link_name, \
+                                            logger.debug("f: %s, (%s:%s), pfno: %s, nfno: %s, 覆盖失败（前） start now[%s], org[%s]", fno, (data_set_idx + 1), link_name, \
                                                          prev_success_fno, next_success_fno, bf.rotation.toEulerAngles().to_log(), bf.org_rotation.toEulerAngles().to_log())
 
                                             bf.rotation = bf.org_rotation.copy()
@@ -1064,7 +1064,7 @@ cdef class ArmAlignmentService:
                                         # 前後どちらも取れた場合、そのslerpとする
                                         correct_qq = MQuaternion.slerp(prev_bf.rotation, next_bf.rotation, ((fno - prev_success_fno) / (next_success_fno - prev_success_fno)))
 
-                                        logger.debug("f: %s, (%s:%s), pfno: %s, nfno: %s, 失敗上書き slerp now[%s], correct[%s]", fno, (data_set_idx + 1), link_name, \
+                                        logger.debug("f: %s, (%s:%s), pfno: %s, nfno: %s, 覆盖失败 slerp now[%s], correct[%s]", fno, (data_set_idx + 1), link_name, \
                                                      prev_success_fno, next_success_fno, bf.rotation.toEulerAngles().to_log(), correct_qq.toEulerAngles().to_log())
 
                                         bf.rotation = correct_qq
@@ -1146,7 +1146,7 @@ cdef class ArmAlignmentService:
 
                         # IK処理実行
                         for now_ik_max_count in range(1):
-                            logger.debug("先端IK計算開始(%s): f: %s(%s:%s), 現在[%s], 指定[%s]", now_ik_max_count, fno, (data_set_idx + 1), \
+                            logger.debug("先端IK计算开始(%s): f: %s(%s:%s), 现在[%s], 指定[%s]", now_ik_max_count, fno, (data_set_idx + 1), \
                                          list(now_ik_links.all().keys()), rep_global_tip.to_log(), rep_target_global_tip.to_log())
                             
                             # IK計算実行
@@ -1186,7 +1186,7 @@ cdef class ArmAlignmentService:
                             # どちらにせよ一旦bf確定
                             for link_name, link_bone in now_ik_links.all().items():
                                 ik_bf = data_set.motion.calc_bf(link_name, fno)
-                                logger.test("f: %s(%s:%s), 一旦確定 now[%s], org[%s]", fno, (data_set_idx + 1), link_name, ik_bf.rotation.toEulerAngles().to_log(), \
+                                logger.test("f: %s(%s:%s), 一旦确定 now[%s], org[%s]", fno, (data_set_idx + 1), link_name, ik_bf.rotation.toEulerAngles().to_log(), \
                                             ik_bf.org_rotation.toEulerAngles().to_log())
                                 data_set.motion.regist_bf(ik_bf, link_name, fno)
 
@@ -1194,7 +1194,7 @@ cdef class ArmAlignmentService:
                                     np.count_nonzero(np.where(np.array(list(dot_start_dict.values())) < np.array(list(dot_far_limit_dict.values())), 1, 0)) == 0:
                                 if (prev_rep_diff == MVector3D() or np.sum(np.abs(rep_diff.data())) < np.sum(np.abs(prev_rep_diff.data()))) and \
                                         np.count_nonzero(np.where(np.abs(rep_diff.data()) > 0.2 * data_set.original_xz_ratio, 1, 0)) == 0:
-                                    logger.debug("☆先端位置合わせ実行成功(%s): f: %s(%s:%s), 指定[%s], 結果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org: [%s], now_vec: [%s]", \
+                                    logger.debug("☆前端位置对齐执行成功(%s): f: %s(%s:%s), 指定[%s], 结果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org: [%s], now_vec: [%s]", \
                                                  now_ik_max_count, fno, (data_set_idx + 1), list(now_ik_links.all().keys()), rep_target_global_tip.to_log(), \
                                                  aligned_rep_effector_vec.to_log(), rep_diff.to_log(), list(dot_near_dict.values()), list(dot_start_dict.values()), \
                                                  start_org_bfs[link_name].rotation.toEulerAngles().to_log(), bf.rotation.toEulerAngles().to_log())
@@ -1215,7 +1215,7 @@ cdef class ArmAlignmentService:
                                 elif (prev_rep_diff == MVector3D() or (prev_rep_diff != MVector3D() and np.sum(np.abs(rep_diff.data())) < np.sum(np.abs(prev_rep_diff.data())))) and \
                                         (np.count_nonzero(np.where(np.abs(rep_diff.data()) > 0.7 * data_set.original_xz_ratio, 1, 0)) == 0):
 
-                                    logger.debug("☆先端位置合わせ実行ちょっと失敗採用(%s): f: %s(%s:%s), 指定[%s], 結果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org_vec: [%s], now_vec: [%s]", \
+                                    logger.debug("☆对齐前端位置执行稍有失败，采用(%s): f: %s(%s:%s), 指定[%s], 结果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org_vec: [%s], now_vec: [%s]", \
                                                  now_ik_max_count, fno, (data_set_idx + 1), list(now_ik_links.all().keys()), rep_target_global_tip.to_log(), \
                                                  aligned_rep_effector_vec.to_log(), rep_diff.to_log(), list(dot_near_dict.values()), list(dot_start_dict.values()), \
                                                  start_org_bfs[link_name].rotation.toEulerAngles().to_log(), bf.rotation.toEulerAngles().to_log())
@@ -1229,7 +1229,7 @@ cdef class ArmAlignmentService:
 
                                     prev_rep_diff = rep_diff
                                 else:
-                                    logger.debug("★先端位置合わせ実行ちょっと失敗不採用(%s): f: %s(%s:%s), 指定[%s], 結果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org_vec: [%s], now_vec: [%s]", \
+                                    logger.debug("★对齐前端位置执行稍有失败不，采用(%s): f: %s(%s:%s), 指定[%s], 结果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org_vec: [%s], now_vec: [%s]", \
                                                  now_ik_max_count, fno, (data_set_idx + 1), list(now_ik_links.all().keys()), rep_target_global_tip.to_log(), \
                                                  aligned_rep_effector_vec.to_log(), rep_diff.to_log(), list(dot_near_dict.values()), list(dot_start_dict.values()), \
                                                  start_org_bfs[link_name].rotation.toEulerAngles().to_log(), bf.rotation.toEulerAngles().to_log())
@@ -1240,7 +1240,7 @@ cdef class ArmAlignmentService:
                                         # 初回失敗の場合、とりあえず設定
                                         prev_rep_diff = rep_diff
                             else:
-                                logger.debug("★先端位置合わせ実行失敗(%s): f: %s(%s:%s), 指定[%s], 結果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org_vec: [%s], now_vec: [%s]", \
+                                logger.debug("★前端位置对齐执行失败(%s): f: %s(%s:%s), 指定[%s], 结果[%s], diff[%s], dot_near_dict: [%s], dot_start_dict: [%s], org_vec: [%s], now_vec: [%s]", \
                                              now_ik_max_count, fno, (data_set_idx + 1), list(now_ik_links.all().keys()), rep_target_global_tip.to_log(), \
                                              aligned_rep_effector_vec.to_log(), rep_diff.to_log(), list(dot_near_dict.values()), list(dot_start_dict.values()), \
                                              start_org_bfs[link_name].rotation.toEulerAngles().to_log(), bf.rotation.toEulerAngles().to_log())
@@ -1250,7 +1250,7 @@ cdef class ArmAlignmentService:
                         if len(is_success) > 0:
                             if is_success.count(True) == 0:
                                 # 全てのパターンで失敗してる場合、失敗ログ
-                                logger.info("×先端位置合わせ失敗: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
+                                logger.info("×前端对齐失败: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
 
                                 # 最初に戻す
                                 for link_name in list(now_ik_links.all().keys())[1:]:
@@ -1262,16 +1262,16 @@ cdef class ArmAlignmentService:
 
                                 if len(is_success) > 1 and is_success.count(False) > 0:
                                     # どこかのパターンで失敗している場合、一部成功ログ
-                                    logger.info("△先端位置合わせ一部成功: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
+                                    logger.info("△先端位置对齐一部分成功: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
                                 else:
                                     # 全部成功している場合、成功ログ
-                                    logger.info("○先端位置合わせ成功: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
+                                    logger.info("○前端对齐成功: f: %s(%s-%s)", fno, (data_set_idx + 1), target_link.effector_display_bone_name)
 
             if fno // 500 > prev_block_fno:
-                logger.count("位置合わせ", fno, fnos)
+                logger.count("对齐", fno, fnos)
                 prev_block_fno = fno // 500
         
-        logger.count("位置合わせ", fno, fnos)
+        logger.count("对齐", fno, fnos)
 
     # 手首位置合わせの準備
     def prepare_wrist(self, data_set_idx: int):
@@ -1351,8 +1351,8 @@ cdef class ArmAlignmentService:
                 org_palm_length = (data_set.org_model.bones["{0}手首".format(direction)].position.distanceToPoint(data_set.org_model.bones[tip_bone_name].position))
                 rep_palm_length = (data_set.rep_model.bones["{0}手首".format(direction)].position.distanceToPoint(data_set.rep_model.bones[tip_bone_name].position))
 
-            logger.info("【No.%s】作成元モデルの%s手のひらの大きさ: %s", (data_set_idx + 1), direction, round(org_palm_length, 5))
-            logger.info("【No.%s】変換先モデルの%s手のひらの大きさ: %s", (data_set_idx + 1), direction, round(rep_palm_length, 5))
+            logger.info("【No.%s】创建模型的%s手掌大小: %s", (data_set_idx + 1), direction, round(org_palm_length, 5))
+            logger.info("【No.%s】目标模型的%s手掌大小: %s", (data_set_idx + 1), direction, round(rep_palm_length, 5))
 
             # 手首リンク登録
             self.target_links[data_set_idx][alignment_idx] = \
@@ -1416,7 +1416,7 @@ cdef class ArmAlignmentService:
                 finger_name_list.append("{0}{1}先実体".format(direction, finger_name))
         
         if not set(finger_name_list).issubset(data_set.org_model.bones) or not set(finger_name_list).issubset(data_set.rep_model.bones):
-            logger.warning("指ボーンが不足しているため、指位置合わせはスキップします。", decoration=MLogger.DECORATION_BOX)
+            logger.warning("因为手指骨不足，所以跳过对齐手指的位置。", decoration=MLogger.DECORATION_BOX)
             return []
         
         alignment_start_idx = len(self.target_links[data_set_idx].keys()) + 1
@@ -1514,7 +1514,7 @@ cdef class ArmAlignmentService:
             model.bone_indexes[wrist_entity_bone.index] = wrist_entity_bone.name
             model.wrist_entity_vertex[direction] = wrist_entity_vetex
 
-        logger.info("【No.%s】%sモデルの%s手のひら頂点INDEX: %s (%s)", (data_set_idx + 1), target_model_type, direction, \
+        logger.info("【No.%s】%s模型的%s手掌顶点INDEX: %s (%s)", (data_set_idx + 1), target_model_type, direction, \
                     model.wrist_entity_vertex[direction].index, model.wrist_entity_vertex[direction].position.to_log())
 
     # 処理対象データセットINDEX取得
@@ -1531,6 +1531,6 @@ cdef class ArmAlignmentService:
                 if "右手首" in data_set.org_model.bones and "左手首" in data_set.org_model.bones and "右手首" in data_set.rep_model.bones and "左手首" in data_set.rep_model.bones:
                     target_data_set_idxs.append(data_set_idx)
                 else:
-                    logger.info("【No.%s】元モデルか先モデルに「手首」ボーンが不足しているため、処理対象外とします。", (data_set_idx + 1))
+                    logger.info("【No.%s】因为原模型或目标模型中缺少「手首」“手腕”骨骼，所以不属于处理对象。", (data_set_idx + 1))
             
         return target_data_set_idxs

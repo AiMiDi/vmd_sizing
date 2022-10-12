@@ -31,7 +31,7 @@ class MyFrame(wx.Frame):
           sizer_5 = wx.BoxSizer(wx.VERTICAL)
           sizer_4 = wx.BoxSizer(wx.VERTICAL)
           sizer_3 = wx.BoxSizer(wx.VERTICAL)
-          label_69 = wx.StaticText(self, wx.ID_ANY, "　　＊＊　マウス右ダブルクリックで該当色(r, g, b)をクリップボードにコピー　＊＊")
+          label_69 = wx.StaticText(self, wx.ID_ANY, "　　＊＊　鼠标右键点击可将相应颜色（r，g，b）复制到剪贴板　＊＊")
           sizer_1.Add(label_69, 0, wx.ALL | wx.EXPAND, 1)
           label_70 = wx.StaticText(
                self, wx.ID_ANY, "AQUAMARINE", style=wx.ALIGN_CENTER)
